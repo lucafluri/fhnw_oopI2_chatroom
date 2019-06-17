@@ -12,16 +12,18 @@ import javafx.stage.Stage;
 
 public class chatroom_client extends Application {
     //MVC Stuff
-    client_model model;
-    client_view view;
-    client_controller controller;
+    private client_model model;
+    private client_view view;
+    private client_controller controller;
+    Stage window;
 
 
     @Override
     public void start(Stage primaryStage) throws Exception{
        //Init
+        window = primaryStage;
         model = new client_model();
-        view = new client_view(primaryStage, model);
+        view = new client_view(window, model);
         controller = new client_controller(model, view);
 
         view.start();
