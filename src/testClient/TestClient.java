@@ -66,7 +66,7 @@ public class TestClient {
 					socket = sslsocketfactory.createSocket(ipAddress, portNumber);
 					
 					// The next line is entirely optional !!
-					// The SSL handshake would happen automatically, the first time we send data.
+					// The SSL handshake would happen automatically, the first time we cSend data.
 					// Or we can immediately force the handshaking with this method:
 					((SSLSocket) socket).startHandshake();
 				} else {
@@ -94,7 +94,7 @@ public class TestClient {
 					Thread t = new Thread(r);
 					t.start();
 
-					// Loop, allowing the user to send messages to the server
+					// Loop, allowing the user to cSend messages to the server
 					// Note: We still have our scanner
 					System.out.println("Enter commands to server or ctrl-D to quit");
 					while (in.hasNext()) {

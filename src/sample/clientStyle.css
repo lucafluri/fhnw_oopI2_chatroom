@@ -1,0 +1,9 @@
+#windowbar {
+    -fx-background-color: #212121;
+}
+
+#button1{
+    -fx-background-color: #606060;
+    -fx-background-radius: 20;
+    -fx-alignment: center;
+}

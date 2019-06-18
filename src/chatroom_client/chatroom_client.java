@@ -15,6 +15,8 @@ public class chatroom_client extends Application {
     private client_model model;
     private client_view view;
     private client_controller controller;
+
+
     Stage window;
 
 
@@ -26,9 +28,18 @@ public class chatroom_client extends Application {
         view = new client_view(window, model);
         controller = new client_controller(model, view);
 
+
+
         view.start();
     }
 
+    @Override
+    public void stop() {
+        if (view != null) {
+            view.stop();
+        }
+
+    }
 
     public static void main(String[] args) {
         launch(args);
