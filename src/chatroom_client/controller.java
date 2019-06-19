@@ -1,13 +1,11 @@
-package chatroom_client.controller;
+package chatroom_client;
 
 
 
-import chatroom_client.createAccountPrompt;
-import chatroom_client.model.client_model;
-import chatroom_client.utils.transl;
-import chatroom_client.view.client_view;
+
 import javafx.application.Platform;
 import javafx.beans.binding.StringBinding;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -18,9 +16,9 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Locale;
 
-public class client_controller  {
-    private final client_view view;
-    private final client_model model;
+public class controller {
+    private final view view;
+    private final model model;
     private double xOffset = 0;
     private double yOffset = 0;
     private Socket socket = null;
@@ -28,36 +26,62 @@ public class client_controller  {
     OutputStreamWriter socketOut;
     Runnable r;
     Thread t;
+    Runnable r1;
+    Thread t1;
 
-    public client_controller(client_model model, client_view view) throws IOException {
+    public controller(model model, view view) throws IOException {
         this.model = model;
         this.view = view;
 
         windowEventHandlers();
         SettingsEventHandlers();
         connectToServer();
-        startThread();
+        startThreadListener();
+        startThreadStates();
 
 
 
 
     }
+    //Manage States when not connected in a thread
+    private void startThreadStates() {
+        r1 = () -> {
+            while(true) {
+                //If not Connected
+                if (checkConnection()) {
+                    //TODO States to active
+                    view.mvSetting1.setDisable(false);
+                    model.connected = true;
+                } else {
+                    //TODO States to disabled
+                    view.mvSetting1.setDisable(true);
+                    model.connected = false;
+                }
+            }
+        };
+        t1 = new Thread(r1);
+        t1.start();
+    }
 
     //Derived from TestClient Example
-    private void startThread() {
-        r = new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    String msg;
-                    try {
-                        msg = socketIn.readLine();
-                        System.out.println("Received: " + msg);
-                    } catch (IOException e) {
-                        break;
-                    }
-                    if (msg == null) break; // In case the server closes the socket
+    private void startThreadListener() {
+        setReaderWriters(socket);
+        // Create thread to read incoming messages
+        r = () -> {
+            while (true) {
+                String msg;
+                try {
+                    msg = socketIn.readLine();
+                    System.out.println("Received: " + msg);
+                } catch (IOException e) {
+                    break;
                 }
+                if (msg == null) break; // In case the server closes the socket
+
+                Platform.runLater(() -> {
+                    displayInfo1(msg);
+                    view.cMessagesContainer.getChildren().add(new Label(msg));
+                });
             }
         };
         t = new Thread(r);
@@ -65,17 +89,18 @@ public class client_controller  {
     }
 
 
-    private boolean connectToServer() throws IOException {
+    private boolean connectToServer() { //No SSL
         try {
             displayStatus(getBind("ConnectingStatus"), model.ipAddress);
             socket = new Socket(model.ipAddress, model.portNumber);
-            socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            socketOut = new OutputStreamWriter(socket.getOutputStream());
+            //setReaderWriters(socket);
             System.out.println("Connected");
             displayStatus(getBind("ConnectedStatus"), model.ipAddress);
+            model.connected = true;
             return true;
         }catch (IOException e){
             displayStatus(getBind("ConnectingFail"), model.ipAddress);
+            model.connected = false;
             return false;
         }finally {
 
@@ -83,9 +108,29 @@ public class client_controller  {
 
     }
 
-    private void sendString(String text) throws IOException {
-        socketOut.write(text);
-        socketOut.flush();
+    private boolean checkConnection(){
+       return socket.isConnected();
+    }
+
+    private void setReaderWriters(Socket socket) {
+        try {
+            socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            socketOut = new OutputStreamWriter(socket.getOutputStream());
+            System.out.println("READER WRITER ESTABLISHED");
+        }catch (IOException ex){
+            System.out.println("FAIL");
+        }
+
+    }
+
+    private void sendString(String text) {
+
+        try {
+            socketOut.write(text + "\n");
+            socketOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendMessage(String... parts){
@@ -93,16 +138,19 @@ public class client_controller  {
             for (String part : parts) {
                 socketOut.write(part + "|");
             }
+            socketOut.write("\n"); //Only works with lines...
             socketOut.flush();
         }catch(IOException ex){
-            System.out.println("IO EXCEPTION");
+            ex.printStackTrace();
         }
     }
 
     private void SettingsEventHandlers() {
         view.mvSetting1.setOnAction(e -> {
-            String[] data = createAccountPrompt.display();
+            String[] data = createLogin.display();
             sendMessage("CreateLogin", data[0], data[1]);
+            //System.out.println("SENT");
+
         });
     }
 
@@ -113,7 +161,7 @@ public class client_controller  {
 
     //todo switch to StringBinds
     public void displayInfo1(String info){
-        view.sbInfo1.setText(info);
+        view.sbInfo1.setText(" | " + info);
     }
 
 
@@ -122,6 +170,7 @@ public class client_controller  {
         view.wbClose.setOnAction(e -> {
             view.stop();
             if(t!=null){t.stop();}
+            if(t1!=null){t1.stop();}
             if(socket!=null){
                 try {
                     socket.close();

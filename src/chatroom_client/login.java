@@ -1,7 +1,7 @@
 package chatroom_client;
 
-import chatroom_client.utils.transl;
-import chatroom_client.model.client_model;
+
+import javafx.beans.binding.BooleanBinding;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,20 +13,19 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class createAccountPrompt {
-    //vars
-    client_model model;
-
-    static String[] data = new String[2];
+public class login {
+    static boolean data;
 
     public static String[] display(){
+        
+
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UTILITY);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Create new Account");
         Label usernameLabel = new Label(transl.get("newUsername"));
         TextField usernameInput = new TextField();
-        Label passwordLabel = new Label(transl.get("newPassword"));
+        Label passwordLabel = new Label(transl.get("newPassword")); //TODO add password stars and option to show plain text
         TextField passwordInput = new TextField();
         Button OK = new Button(transl.get("ok"));
         Button Cancel = new Button(transl.get("cancel"));
@@ -39,9 +38,28 @@ public class createAccountPrompt {
         layout.setPadding(new Insets(10));
         layout.getChildren().addAll(usernameLabel, usernameInput, passwordLabel, passwordInput, Buttons);
 
+
+        //Disable Binding
+        BooleanBinding validInputBinding = new BooleanBinding() {
+            {
+                super.bind(usernameInput.textProperty(), passwordInput.textProperty());
+            }
+
+            @Override
+            protected boolean computeValue() {
+                return (usernameInput.getText().length() < 3 || passwordInput.getText().length() < 3);
+            }
+        };
+
+        OK.disableProperty().bind(validInputBinding);
+
+
         OK.setOnAction(e -> {
-            data[0] = usernameInput.getText();
-            data[1] = passwordInput.getText();
+            String username = usernameInput.getText();
+            String pass = passwordInput.getText();
+
+            data[0] = username;
+            data[1] = pass;
             stage.close();
         });
         Cancel.setOnAction(e -> {
@@ -50,7 +68,7 @@ public class createAccountPrompt {
         });
 
         Scene scene = new Scene(layout, 200, 200);
-        scene.getStylesheets().add("chatroom_client/view/styles.css");
+        scene.getStylesheets().add("chatroom_client/styles.css");
         stage.setScene(scene);
         stage.showAndWait();
 

@@ -1,8 +1,7 @@
-package chatroom_client.view;
+package chatroom_client;
 
 
-import chatroom_client.model.client_model;
-import chatroom_client.utils.transl;
+
 import com.jfoenix.controls.JFXButton;
 import javafx.beans.binding.StringBinding;
 import javafx.geometry.Insets;
@@ -17,9 +16,9 @@ import javafx.stage.StageStyle;
 
 
 
-public class client_view{
+public class view {
     //Main Elements
-    public client_model model;
+    public model model;
     public Stage stage;
 
     public BorderPane root = new BorderPane();
@@ -35,6 +34,7 @@ public class client_view{
     public HBox cControls = new HBox();
     public TextField cTextField = new TextField();
     public JFXButton cSend = new JFXButton();
+    //TODO MESSAGE CLASS AND TESTS
 
     //ChatView Elements
     public VBox cvContainerLeft = new VBox();
@@ -76,7 +76,7 @@ public class client_view{
      * @param stage
      * @param model
      */
-    public client_view(Stage stage, client_model model) {
+    public view(Stage stage, model model) {
         this.model = model;
         this.stage = stage;
 
@@ -98,7 +98,7 @@ public class client_view{
         root.setBottom(statusbar);
 
         Scene scene = new Scene(root, 750, 500);
-        scene.getStylesheets().add("chatroom_client/view/styles.css");
+        scene.getStylesheets().add("chatroom_client/styles.css");
 
 
         stage.setScene(scene);

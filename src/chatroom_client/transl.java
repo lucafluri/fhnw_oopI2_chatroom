@@ -9,7 +9,7 @@
  */
 
 
-package chatroom_client.utils;
+package chatroom_client;
 
 
 import javafx.beans.binding.Bindings;
