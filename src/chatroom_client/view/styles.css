@@ -1,0 +1,10 @@
+.button {
+    -fx-background-color: #606060;
+}
+
+#windowBar {
+    -fx-background-color: #202020;
+    -fx-min-height: 20px;
+    -fx-max-height: 40px;
+    -fx-pref-height: 40px;
+}
