@@ -146,11 +146,15 @@ public class controller {
     }
 
     private void SettingsEventHandlers() {
-        view.mvSetting1.setOnAction(e -> {
+        view.mvSetting1.setOnAction(e -> { //Create Login
             String[] data = createLogin.display();
             sendMessage("CreateLogin", data[0], data[1]);
             //System.out.println("SENT");
-
+        });
+        view.mvSetting2.setOnAction(e -> { //Login
+            String[] data = login.display();
+            sendMessage("Login", data[0], data[1]);
+            //System.out.println("SENT");
         });
     }
 

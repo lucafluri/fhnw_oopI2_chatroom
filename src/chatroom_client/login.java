@@ -14,25 +14,25 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class login {
-    static boolean data;
+    static String[] data = new String[2];
 
     public static String[] display(){
-        
+
 
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UTILITY);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Create new Account");
-        Label usernameLabel = new Label(transl.get("newUsername"));
+        stage.setTitle(transl.get("Login"));
+        Label usernameLabel = new Label(transl.get("username"));
         TextField usernameInput = new TextField();
-        Label passwordLabel = new Label(transl.get("newPassword")); //TODO add password stars and option to show plain text
+        Label passwordLabel = new Label(transl.get("password")); //TODO add password stars and option to show plain text
         TextField passwordInput = new TextField();
-        Button OK = new Button(transl.get("ok"));
+        Button Login = new Button(transl.get("Login"));
         Button Cancel = new Button(transl.get("cancel"));
         HBox Buttons = new HBox();
         Buttons.setPadding(new Insets(10));
 
-        Buttons.getChildren().addAll(OK, Cancel);
+        Buttons.getChildren().addAll(Login, Cancel);
 
         VBox layout = new VBox();
         layout.setPadding(new Insets(10));
@@ -51,19 +51,19 @@ public class login {
             }
         };
 
-        OK.disableProperty().bind(validInputBinding);
+        Login.disableProperty().bind(validInputBinding);
 
 
-        OK.setOnAction(e -> {
+        Login.setOnAction(e -> {
             String username = usernameInput.getText();
             String pass = passwordInput.getText();
-
             data[0] = username;
             data[1] = pass;
+
             stage.close();
         });
         Cancel.setOnAction(e -> {
-            data = new String[2];
+
             stage.close();
         });
 
@@ -72,9 +72,8 @@ public class login {
         stage.setScene(scene);
         stage.showAndWait();
 
-
-
         return data;
+
 
     }
 

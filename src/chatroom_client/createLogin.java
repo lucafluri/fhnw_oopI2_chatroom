@@ -22,7 +22,7 @@ public class createLogin {
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UTILITY);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Create new Account");
+        stage.setTitle(transl.get("CreateAccount"));
         Label usernameLabel = new Label(transl.get("newUsername"));
         TextField usernameInput = new TextField();
         Label passwordLabel = new Label(transl.get("newPassword")); //TODO add password stars and option to show plain text
