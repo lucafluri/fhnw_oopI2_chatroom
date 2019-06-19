@@ -75,6 +75,7 @@ public class client_controller  {
             displayStatus(getBind("ConnectedStatus"), model.ipAddress);
             return true;
         }catch (IOException e){
+            displayStatus(getBind("ConnectingFail"), model.ipAddress);
             return false;
         }finally {
 
@@ -87,11 +88,21 @@ public class client_controller  {
         socketOut.flush();
     }
 
+    private void sendMessage(String... parts){
+        try {
+            for (String part : parts) {
+                socketOut.write(part + "|");
+            }
+            socketOut.flush();
+        }catch(IOException ex){
+            System.out.println("IO EXCEPTION");
+        }
+    }
+
     private void SettingsEventHandlers() {
         view.mvSetting1.setOnAction(e -> {
             String[] data = createAccountPrompt.display();
-            System.out.println(data[0]);
-            System.out.println(data[1]);
+            sendMessage("CreateLogin", data[0], data[1]);
         });
     }
 
