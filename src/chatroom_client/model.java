@@ -11,11 +11,12 @@ public class model {
     int portNumber = 31415;
     boolean secure = false;
     boolean connected = false;
-    String currentUser = null;
-    String token = null;
+    String currentUser = "";
+    String currentChatroom = "";
+    String token = "";
     String lastAnswer = "";
     ArrayList<String> joinedRooms = new ArrayList<>();
-    String[] joinableRooms = null;
+    String[] joinableRooms = new String[1];
     boolean loggedIn = false;
     ArrayList<String> contacts = new ArrayList<>();
     ArrayList<String> blockedUsers = new ArrayList<>();

@@ -185,7 +185,10 @@ public class view {
         wbClose = new Button("", new ImageView(closeIcon));
 
 
+
+
         wbSpacer.setMinWidth(Region.USE_PREF_SIZE);
+        wbHamMenu.setMaxSize(20, 20);
         HBox.setHgrow(wbSpacer, Priority.ALWAYS);
         windowBar.setPadding(new Insets(10));
         windowBar.setAlignment(Pos.CENTER);

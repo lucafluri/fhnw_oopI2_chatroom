@@ -109,7 +109,6 @@ public class controller {
                 try {
                     msg = socketIn.readLine();
                     processMsg(msg);
-                    System.out.println("Received: " + msg);
                 } catch (IOException e) {
                     break;
                 }
@@ -118,7 +117,7 @@ public class controller {
                     break; // In case the server closes the socket
                 }
                 Platform.runLater(() -> {
-                    displayInfo1(msg);
+                    displayInfo2(msg);
                     //view.cMessagesContainer.getChildren().add(new Label(msg));
                 });
             }
@@ -216,7 +215,7 @@ public class controller {
             resetLastAnswer();
             //System.out.println("ResetAnswer");
         }//reset lastAnswer when only checking for success  bool
-        System.out.println(parts.toString());
+        displayInfo2(parts.toString());
         return Boolean.parseBoolean(parts[1]);
 
     }
@@ -268,9 +267,9 @@ public class controller {
         try {
             socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             socketOut = new OutputStreamWriter(socket.getOutputStream());
-            System.out.println("READER WRITER ESTABLISHED");
+            displayInfo2("READER WRITER ESTABLISHED");
         }catch (IOException ex){
-            System.out.println("FAIL");
+            displayInfo2("FAIL");
         }
 
     }
@@ -320,7 +319,7 @@ public class controller {
         }
     }
 
-    private void printAnswer(){System.out.println(model.lastAnswer);}
+    private void printAnswer(){displayInfo2(model.lastAnswer);}
 
     private void SettingsEventHandlers() {
         view.mvServerConnect.setOnAction(e -> { //Server Connect
@@ -347,10 +346,10 @@ public class controller {
                 setToken();
                 model.currentUser=user;
                 model.loggedIn = true;
-                System.out.println(model.token);
+                displayInfo2(model.token);
             }else{
                 model.loggedIn = false;
-                System.out.println("FAILED!");
+                displayInfo2("FAILED!");
             }
         });
         view.mvJoinChatroom.setOnAction(e -> { //Join Chatroom

@@ -23,6 +23,7 @@
     -fx-text-fill: -white;
 }
 
+
 #mvContainerLeft {
     -fx-background-color: -grey1;
     -fx-pref-width: 200px;
@@ -43,26 +44,32 @@
 #windowBar {
     -fx-background-color: -grey1;
     -fx-min-height: 20px;
-    -fx-max-height: 40px;
-    -fx-pref-height: 40px;
+    -fx-max-height: 20px;
+    -fx-pref-height: 20px;
 }
 
 #root {
     -fx-background-color: -grey0;
 }
 
+.hbox {
+    -fx-background-color: -grey0;
+}
+
+.vbox {
+    -fx-background-color: -grey0;
+}
+
 .text-field {
     -fx-background-color: -grey5;
     -fx-text-fill: white;
+    -fx-background-radius: 0;
+    -fx-background-border: 2;
 }
 
 #wbHamMenu, #wbMinimize, #wbMaximize, #wbClose {
     -fx-background-color: -grey1;
-    -fx-graphic-size: 30px;
-    -fx-pref-width: 30px;
-    -fx-min-height: 20px;
-    -fx-max-height: 40px;
-    -fx-pref-height: 40px;
+
 
 }
 
