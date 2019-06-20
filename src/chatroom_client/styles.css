@@ -7,11 +7,15 @@
     -grey4: #353535;
     -grey5: #505050;
     -white: #ffffff;
+    -buttonHeight: 30px;
+    -buttonWidth: 150px;
+    -buttonSmallWIdth: 75px;
 }
 
 
 .button {
-    -fx-pref-width: 150px;
+    -fx-pref-width: -buttonWidth;
+    -fx-pref-height: -buttonHeight;
     -fx-alignment: center;
     -fx-background-color: -grey3;
     -fx-text-fill: white;
@@ -65,12 +69,21 @@
     -fx-text-fill: white;
     -fx-background-radius: 0;
     -fx-background-border: 2;
+    -fx-pref-height: -buttonHeight;
 }
 
 #wbHamMenu, #wbMinimize, #wbMaximize, #wbClose {
     -fx-background-color: -grey1;
+    -fx-min-width: 20;
+    -fx-pref-width: 100;
+    -fx-max-width: 100;
+    -fx-max-height: 20px;
+    -fx-pref-height: 20px;
 
+}
 
+#wbMaximize, #wbMinimize, wbClose {
+    -fx-pref-width: 50px;
 }
 
 #center {
@@ -121,7 +134,9 @@
 }
 
 #mvToEN, #mvToDE {
-    -fx-pref-width: 100px;
+    -fx-pref-width: 75px;
 }
 
-
+#cControls {
+    -fx-alignment: bottom-center;
+}

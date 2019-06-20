@@ -243,14 +243,44 @@ public class controller {
 
     }
 
+    /**
+     * Tests Connection after socket has been established
+     * ONLY SENDS A PING
+     * @return boolean result
+     */
+    private boolean testConnection(){
+        boolean result = false;
+
+        try{
+            sendString("Ping");
+            if(getSuccess()){result=true;}
+        } catch (Exception ex){
+            alertBox.display("No Connection");
+            displayStatus(getBind("null"), "");
+        }
+
+
+        return result;
+    }
 
     private boolean connectToServer(String ip, int port) { //No SSL
         try {
+
+            displayStatus(getBind("ConnectingStatus"), ip);
+
             socket = new Socket(ip, port);
-            model.connected = true;
-            model.ipAddress = ip;
-            model.portNumber = port;
             startThreadListener();
+
+            if(testConnection()) {
+                model.connected = true;
+                model.ipAddress = ip;
+                model.portNumber = port;
+                displayStatus(getBind("ConnectedStatus"), ip);
+            }
+
+
+
+
             return true;
         }catch (IOException e){
             model.connected = false;
@@ -267,7 +297,7 @@ public class controller {
         try {
             socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             socketOut = new OutputStreamWriter(socket.getOutputStream());
-            displayInfo2("READER WRITER ESTABLISHED");
+
         }catch (IOException ex){
             displayInfo2("FAIL");
         }
@@ -478,10 +508,13 @@ public class controller {
             model.settingsOpen = !model.settingsOpen;
             if(model.settingsOpen){
                 view.root.setLeft(view.menuView);
-                view.wbHamMenu.setGraphic(new ImageView(new Image("assets/HamMenuOpen.png")));
+                //view.wbHamMenu.setGraphic(new ImageView(new Image("assets/HamMenuOpen.png")));
+                view.wbHamMenu.setText("|conversations|");
             }else{
                 view.root.setLeft(view.chatView);
-                view.wbHamMenu.setGraphic(new ImageView(new Image("assets/HamMenu.png")));
+                //view.wbHamMenu.setGraphic(new ImageView(new Image("assets/HamMenu.png")));
+                view.wbHamMenu.setText("|menu|");
+
             }
         });
 
