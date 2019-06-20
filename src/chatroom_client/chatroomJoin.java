@@ -15,7 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class joinChatroom {
+public class chatroomJoin {
     static String[] data = new String[1];
 
     public static String[] display(String[] publicChatrooms){

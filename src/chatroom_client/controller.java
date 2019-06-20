@@ -4,6 +4,7 @@ package chatroom_client;
 
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,8 +14,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Locale;
+
+import static chatroom_client.transl.get;
 
 public class controller {
     private final view view;
@@ -35,9 +37,10 @@ public class controller {
 
         windowEventHandlers();
         SettingsEventHandlers();
+        sendingEventHandler();
         //connectToServer();
         //startThreadListener();
-        startThreadStates();
+        //startStates();
 
 
 
@@ -45,6 +48,11 @@ public class controller {
     }
     //Manage States when not connected in a thread
     private void startStates() {
+        view.mvLogin.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+            return (!model.connected);
+        }));
+
+
         r1 = () -> {
             while(true) {
                 //CheckConnection State
@@ -176,9 +184,15 @@ public class controller {
 
             model.lastAnswer = msg;
         }else if(MessageType.equals("MessageError")){
-            //TODO DISPLAY ERROR
+            Platform.runLater(() -> {
+                alertBox.display(parts[1]);
+            });
         }else if(MessageType.equals("MessageText")){
-            //TODO Show Message
+            Platform.runLater(() -> {
+                view.cMessagesContainer.getChildren().add(new message(parts[3], parts[2], true));
+            });
+
+
         }
     }
 
@@ -204,7 +218,7 @@ public class controller {
     }
 
     private String[] getList(){
-        String[] parts = model.lastAnswer.split("\\|");
+        String[] parts = model.lastAnswer.split("\\|"); //May throw nullpointer Exception
         resetLastAnswer(); //reset lastAnswer to null
         int listItems = parts.length-2;
         String[] list = new String[listItems];
@@ -285,11 +299,7 @@ public class controller {
 
     private void updatePublicChatrooms(){
         sendMessage("ListChatrooms", model.token);
-        if(getSuccess()){
-            model.publicChatrooms = getList();
-        }else{
-
-        }
+        if(getSuccess()){model.publicChatrooms = getList();}
     }
 
     private void printAnswer(){System.out.println(model.lastAnswer);}
@@ -333,19 +343,53 @@ public class controller {
         });
         view.mvJoinChatroom.setOnAction(e -> { //Join Chatroom
             updatePublicChatrooms();
-            String[] data = joinChatroom.display(model.publicChatrooms);
+            String[] data = chatroomJoin.display(model.publicChatrooms);
             String choice = data[0];
+            if (choice != null) {model.joinedRooms.add(choice);}
 
 
             sendMessage("JoinChatroom", model.token, choice, model.currentUser);
-            if(getSuccess()){
-                model.joinedRooms.add(choice);
-            }else{
 
-            }
         });
+        view.mvLeaveChatoom.setOnAction(e -> { //Leave Chatroom
+            String[] data = chatroomLeave.display(model.joinedRooms.toArray(new String[0]));
+            String choice = data[0];
+            if(choice!=null){model.joinedRooms.remove(choice);}
+
+            sendMessage("LeaveChatroom", model.token, choice, model.currentUser);
+        });
+        view.mvCreateChatroom.setOnAction(e -> { //Create Chatroom
+            String[] data = chatroomCreate.display();
+            String choice = data[0];
+            String isPublic = data[1];
+
+            sendMessage("CreateChatroom", model.token, choice, isPublic);
+        });
+        view.mvDeleteChatroom.setOnAction(e -> { //Delete Chatroom
+            updatePublicChatrooms();
+            String[] data = chatroomDelete.display(model.publicChatrooms);
+            String choice = data[0];
+            if(choice!=null){model.joinedRooms.remove(choice);}
 
 
+            sendMessage("DeleteChatroom", model.token, choice);
+            //TODO ERROR MESSAGES -> ONLY CREATOR CAN DELETE...
+        });
+        view.mvChangePassword.setOnAction(e -> { //ChangePassword
+            String[] data = changePassword.display();
+            String newPass = data[0];
+            sendMessage("ChangePassword", model.token, newPass);
+        });
+        view.mvDeleteLogin.setOnAction(e -> { //Delete Login
+            if(confirmBox.display()){sendMessage("DeleteLogin", model.token);}
+            if(getSuccess()){
+
+            }else{
+                alertBox.display(get("TokenInvalid"));
+            }
+
+
+        });
 
 
         view.mvLogout.setOnAction(e -> { //Logout
@@ -416,12 +460,19 @@ public class controller {
 
     }
 
+    public void sendingEventHandler(){
+        view.cSend.setOnAction(e -> {
+            String text = view.cTextField.getText();
+            view.cMessagesContainer.getChildren().add(new message(text, model.currentUser, false));
+        });
+    }
+
     public StringBinding getBind(String key){
         return transl.createStringBinding(key);
     }
 
     public String getString(String key){
-        return transl.get(key);
+        return get(key);
     }
 
 }

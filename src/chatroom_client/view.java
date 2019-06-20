@@ -56,7 +56,6 @@ public class view {
     JFXButton mvJoinChatroom = new JFXButton();
     JFXButton mvLeaveChatoom = new JFXButton();
     JFXButton mvDeleteChatroom = new JFXButton();
-
     JFXButton mvCreateChatroom = new JFXButton();
     JFXButton mvChangePassword = new JFXButton();
     JFXButton mvDeleteLogin = new JFXButton();
