@@ -176,19 +176,23 @@ public class view {
     private void setWindowBar(){
         wbSpacer = new Region();
         Image menuIcon = new Image("assets/HamMenu.png");
-        wbHamMenu = new Button("", new ImageView(menuIcon));
+        //wbHamMenu = new Button("", new ImageView(menuIcon));
+        wbHamMenu = new Button("|menu|");
         Image minIcon = new Image("assets/minimize.png");
-        wbMinimize = new Button("", new ImageView(minIcon));
+        //wbMinimize = new Button("", new ImageView(minIcon));
+        wbMinimize = new Button("|min|");
         Image maxIcon = new Image("assets/maximize.png");
-        wbMaximize = new Button("", new ImageView(maxIcon));
+        //wbMaximize = new Button("", new ImageView(maxIcon));
+        wbMaximize = new Button("|max|");
         Image closeIcon = new Image("assets/close.png");
-        wbClose = new Button("", new ImageView(closeIcon));
+        //wbClose = new Button("", new ImageView(closeIcon));
+        wbClose = new Button("|close|");
 
 
 
 
         wbSpacer.setMinWidth(Region.USE_PREF_SIZE);
-        wbHamMenu.setMaxSize(20, 20);
+        wbHamMenu.setPrefSize(20, 20);
         HBox.setHgrow(wbSpacer, Priority.ALWAYS);
         windowBar.setPadding(new Insets(10));
         windowBar.setAlignment(Pos.CENTER);
