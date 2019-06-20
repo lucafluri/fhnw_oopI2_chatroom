@@ -2,6 +2,7 @@ package chatroom_client;
 
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,6 +29,7 @@ public class alertBox {
 
         VBox layout = new VBox();
         layout.setPadding(new Insets(10));
+        layout.setAlignment(Pos.CENTER);
         layout.getChildren().addAll(label, Buttons);
 
 

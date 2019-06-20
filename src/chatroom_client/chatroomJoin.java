@@ -19,7 +19,7 @@ public class chatroomJoin {
     static String[] data = new String[1];
 
     public static String[] display(String[] publicChatrooms){
-        data[0] = "";
+        data[0] = " ";
 
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UTILITY);
@@ -54,7 +54,8 @@ public class chatroomJoin {
             stage.close();
         });
         Cancel.setOnAction(e -> {
-            data = new String[1];
+            data[0] = " ";
+
             stage.close();
         });
 

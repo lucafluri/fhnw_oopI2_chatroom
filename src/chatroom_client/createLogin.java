@@ -17,8 +17,8 @@ public class createLogin {
     static String[] data = new String[2];
 
     public static String[] display(){
-        data[0] = "";
-        data[1] = "";
+        data[0] = " ";
+        data[1] = " ";
 
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UTILITY);
@@ -68,7 +68,8 @@ public class createLogin {
             stage.close();
         });
         Cancel.setOnAction(e -> {
-            data = new String[2];
+            data[0] = " ";
+            data[1] = " ";
             stage.close();
         });
 

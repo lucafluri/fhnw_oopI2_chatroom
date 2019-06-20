@@ -1,14 +1,120 @@
+* {
+    -black0: #000000;
+    -grey0: #151515;
+    -grey1: #202020;
+    -grey2: #252525;
+    -grey3: #303030;
+    -grey4: #353535;
+    -grey5: #505050;
+    -white: #ffffff;
+}
+
+
 .button {
-    -fx-background-color: #606060;
+    -fx-pref-width: 150px;
+    -fx-alignment: center;
+    -fx-background-color: -grey3;
+    -fx-text-fill: white;
+    -fx-background-radius: 0;
+    -fx-background-border: 2;
+}
+
+.label {
+    -fx-text-fill: -white;
+}
+
+#mvContainerLeft {
+    -fx-background-color: -grey1;
+    -fx-pref-width: 200px;
+}
+
+#menuView {
+    -fx-background-color: -grey1;
+    -fx-background-border: 0;
+
+}
+
+.menuView {
+    -fx-background-color: -grey1;
+
+    -fx-background-border: 0;
 }
 
 #windowBar {
-    -fx-background-color: #202020;
+    -fx-background-color: -grey1;
     -fx-min-height: 20px;
     -fx-max-height: 40px;
     -fx-pref-height: 40px;
 }
 
 #root {
-    -fx-background-color: #ffffff;
+    -fx-background-color: -grey0;
 }
+
+.text-field {
+    -fx-background-color: -grey5;
+    -fx-text-fill: white;
+}
+
+#wbHamMenu, #wbMinimize, #wbMaximize, #wbClose {
+    -fx-background-color: -grey1;
+    -fx-graphic-size: 30px;
+    -fx-pref-width: 30px;
+    -fx-min-height: 20px;
+    -fx-max-height: 40px;
+    -fx-pref-height: 40px;
+
+}
+
+#center {
+    -fx-background-color: -grey0;
+}
+
+#chatView {
+    -fx-background-color: -grey0;
+}
+
+#cMessageScroll {
+    -fx-background-color: -grey0;
+}
+
+#cMessageContainer {
+    -fx-background-color: -grey0;
+}
+
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+   -fx-background-color: -grey0;
+}
+
+// Background color of the whole context menu
+.choice-box .context-menu { -fx-background-color: -grey2; }
+// Focused item background color in the list
+.choice-box .menu-item:focused { -fx-background-color: -grey3; }
+// Text color of non-focused items in the list
+.choice-box .menu-item > .label { -fx-text-fill: white; }
+// Text color of focused item in the list
+.choice-box .menu-item:focused > .label { -fx-text-fill: white; }
+.choice-box > .label { -fx-text-fill: white; }
+.choice-box {
+  -fx-background-color: -grey2;
+  -fx-mark-color: -grey3; // arrow color
+}
+
+
+#mvServerPortInput{
+     -fx-max-width: 50px;
+}
+
+#mvServerIPInput{
+    -fx-max-width: 100px;
+}
+
+#mvToEN, #mvToDE {
+    -fx-pref-width: 100px;
+}
+
+

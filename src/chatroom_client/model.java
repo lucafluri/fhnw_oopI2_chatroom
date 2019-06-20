@@ -13,21 +13,18 @@ public class model {
     boolean connected = false;
     String currentUser = null;
     String token = null;
-    String lastAnswer = null;
+    String lastAnswer = "";
     ArrayList<String> joinedRooms = new ArrayList<>();
+    String[] joinableRooms = null;
     boolean loggedIn = false;
     ArrayList<String> contacts = new ArrayList<>();
     ArrayList<String> blockedUsers = new ArrayList<>();
-    String[] publicChatrooms = null;
+    String[] publicChatrooms = new String[1];
 
 
 
 
-
-
-
-
-    public model(){
-
+    boolean isAnswerReady(){
+        return !lastAnswer.equals("");
     }
 }

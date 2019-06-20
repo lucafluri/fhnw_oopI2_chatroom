@@ -94,7 +94,7 @@ public class view {
         stage.initStyle(StageStyle.UNDECORATED);
 
 
-        setIDs();
+
 
         //setup all views
         setWindowBar();
@@ -111,7 +111,7 @@ public class view {
         Scene scene = new Scene(root, 750, 500);
         scene.getStylesheets().add("chatroom_client/styles.css");
 
-
+        setIDs();
         stage.setScene(scene);
 
 
@@ -215,14 +215,58 @@ public class view {
 
     private void setIDs() {
         root.setId("root");
+        root.getStyleClass().add("root");
         chatView.setId("chatView");
+        chatView.getStyleClass().add("chatView");
         menuView.setId("menuView");
+        menuView.getStyleClass().add("menuView");
         windowBar.setId("windowBar");
         statusbar.setId("statusbar");
         center.setId("center");
+        center.getStyleClass().add("center");
         cMessagesScroll.setId("cMessagesScroll");
         cMessagesContainer.setId("cMessagesContainer");
         cControls.setId("cControls");
+        cTextField.setId("cTextField");
+        cSend.setId("cSend");
+        charsLeft.setId("charsLeft");
+        cvContainerLeft.setId("cvContainerLeft");
+        cvContainerLeft.getStyleClass().add("cvContainerLeft");
+        cvTestConv.setId("cvTestConv");
+        //mv
+        mvContainerLeft.setId("mvContainerLeft");
+        mvServerIPLabel.setId("mvServerIPLabel");
+        mvServerPortLabel.setId("mvServerPortLabel");
+        mvServerIPInput.setId("mvServerIPInput");
+        mvServerPortInput.setId("mvServerPortInput");
+        mvServerIP.setId("mvServerIP");
+        mvServerPort.setId("mvServerPort");
+        mvServerInput.setId("mvServerInput");
+        mvServerConnect.setId("mvServerConnect");
+        mvCreateLogin.setId("mvCreateLogin");
+        mvLogin.setId("mvLogin");
+        mvJoinChatroom.setId("mvJoinChatroom");
+        mvLeaveChatoom.setId("mvLeaveChatoom");
+        mvDeleteChatroom.setId("mvDeleteChatroom");
+        mvCreateChatroom.setId("mvCreateChatroom");
+        mvChangePassword.setId("mvChangePassword");
+        mvDeleteLogin.setId("mvDeleteLogin");
+        mvLogout.setId("mvLogout");
+        mvLangs.setId("mvLangs");
+        mvToEN.setId("mvToEN");
+        mvToDE.setId("mvToDE");
+        wbHamMenu.setId("wbHamMenu");
+        wbMinimize.setId("wbMinimize");
+        wbMaximize.setId("wbMaximize");
+        wbClose.setId("wbClose");
+        wbSpacer.setId("wbSpacer");
+        sbServerStatus.setId("sbServerStatus");
+        sbIP.setId("sbIP");
+        sbInfo1.setId("sbInfo1");
+        sbRegion1.setId("sbRegion1");
+        sbInfo2.setId("sbInfo2");
         //TODO CONTINUE ADDING ID's!!!
     }
+
+
 }

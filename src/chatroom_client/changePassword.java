@@ -17,7 +17,7 @@ public class changePassword {
     static String[] data = new String[1];
 
     public static String[] display(){
-        data[0] = "";
+        data[0] = " ";
 
 
         Stage stage = new Stage();
@@ -65,7 +65,7 @@ public class changePassword {
             stage.close();
         });
         Cancel.setOnAction(e -> {
-            data = new String[1];
+            data[0] = " ";
             stage.close();
         });
 
