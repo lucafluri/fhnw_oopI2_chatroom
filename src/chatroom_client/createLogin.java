@@ -14,10 +14,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class createLogin {
-    static String[] data;
+    static String[] data = new String[2];
 
     public static String[] display(){
-        data = new String[2];
+        data[0] = "";
+        data[1] = "";
 
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UTILITY);

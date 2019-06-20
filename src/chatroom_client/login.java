@@ -17,7 +17,8 @@ public class login {
     static String[] data = new String[2];
 
     public static String[] display(){
-
+        data[0] = "";
+        data[1] = "";
 
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UTILITY);
@@ -59,6 +60,7 @@ public class login {
             String pass = passwordInput.getText();
             data[0] = username;
             data[1] = pass;
+
 
             stage.close();
         });

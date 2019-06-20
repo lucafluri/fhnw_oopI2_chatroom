@@ -34,6 +34,7 @@ public class view {
     public HBox cControls = new HBox();
     public TextField cTextField = new TextField();
     public JFXButton cSend = new JFXButton();
+    Label charsLeft = new Label();
     //TODO MESSAGE CLASS AND TESTS
 
     //ChatView Elements
@@ -41,19 +42,28 @@ public class view {
     public JFXButton cvTestConv = new JFXButton("TEST CONVERSATION");
 
     //MenuView Elements
-    public VBox mvContainerLeft = new VBox();
-    public JFXButton mvSetting1 = new JFXButton();
-    public JFXButton mvSetting2 = new JFXButton();
-    public JFXButton mvSetting3 = new JFXButton();
-    public JFXButton mvSetting4 = new JFXButton();
-    public JFXButton mvSetting5 = new JFXButton();
-    public JFXButton mvSetting6 = new JFXButton();
-    public JFXButton mvSetting7 = new JFXButton();
-    public ChoiceBox dropDownRooms = new ChoiceBox();
-    public ChoiceBox dropDownR = new ChoiceBox();
-    public HBox mvLangs = new HBox();
-    public JFXButton mvToEN = new JFXButton("EN");
-    public JFXButton mvToDE = new JFXButton("DE");
+    VBox mvContainerLeft = new VBox();
+    Label mvServerIPLabel = new Label();
+    Label mvServerPortLabel = new Label();
+    TextField mvServerIPInput = new TextField();
+    TextField mvServerPortInput = new TextField();
+    VBox mvServerIP = new VBox();
+    VBox mvServerPort = new VBox();
+    HBox mvServerInput = new HBox();
+    JFXButton mvServerConnect = new JFXButton();
+    JFXButton mvCreateLogin = new JFXButton();
+    JFXButton mvLogin = new JFXButton();
+    JFXButton mvJoinChatroom = new JFXButton();
+    JFXButton mvLeaveChatoom = new JFXButton();
+    JFXButton mvDeleteChatroom = new JFXButton();
+
+    JFXButton mvCreateChatroom = new JFXButton();
+    JFXButton mvChangePassword = new JFXButton();
+    JFXButton mvDeleteLogin = new JFXButton();
+    JFXButton mvLogout = new JFXButton();
+    HBox mvLangs = new HBox();
+    JFXButton mvToEN = new JFXButton("EN");
+    JFXButton mvToDE = new JFXButton("DE");
 
 
 
@@ -68,6 +78,8 @@ public class view {
     public Label sbServerStatus = new Label();
     public Label sbIP = new Label();
     public Label sbInfo1 = new Label();
+    Region sbRegion1 = new Region();
+    Label sbInfo2 = new Label();
 
 
     /**
@@ -109,7 +121,8 @@ public class view {
 
 
     private void setStatusbarView() {
-        statusbar.getChildren().addAll(sbServerStatus, sbIP, sbInfo1);
+
+        statusbar.getChildren().addAll(sbServerStatus, sbIP, sbInfo1, sbRegion1, sbInfo2);
     }
 
     private void setCenterView() {
@@ -118,7 +131,7 @@ public class view {
 
         cMessagesScroll.setContent(cMessagesContainer);
         cControls.getChildren().addAll(cTextField, cSend);
-        center.getChildren().addAll(cMessagesScroll, cControls);
+        center.getChildren().addAll(cMessagesScroll, cControls, charsLeft);
 
     }
 
@@ -129,18 +142,32 @@ public class view {
     }
 
     private void setMenuView() {
-        mvSetting1.textProperty().bind(getBind("CreateAccount"));
-        mvSetting2.textProperty().bind(getBind("Login"));
-        mvSetting3.textProperty().bind(getBind("JoinChatroom"));
-        mvSetting4.textProperty().bind(getBind("CreateChatroom"));
-        mvSetting5.textProperty().bind(getBind("ChangePassword"));
-        mvSetting6.textProperty().bind(getBind("DeleteAccount"));
-        mvSetting7.textProperty().bind(getBind("Logout"));
+        //language binds
+        mvServerIPLabel.textProperty().bind(getBind("SetServer"));
+        mvServerPortLabel.textProperty().bind(getBind("SetPort"));
+        mvServerIPInput.setText(model.ipAddress);
+        mvServerPortInput.setText(Integer.toString(model.portNumber));
+
+        mvServerConnect.textProperty().bind((getBind("connect")));
+        mvCreateLogin.textProperty().bind(getBind("CreateAccount"));
+        mvLogin.textProperty().bind(getBind("Login"));
+        mvJoinChatroom.textProperty().bind(getBind("JoinChatroom"));
+        mvLeaveChatoom.textProperty().bind(getBind("LeaveChatroom"));
+        mvCreateChatroom.textProperty().bind(getBind("CreateChatroom"));
+        mvDeleteChatroom.textProperty().bind(getBind("DeleteChatroom"));
 
 
+        mvChangePassword.textProperty().bind(getBind("ChangePassword"));
+        mvDeleteLogin.textProperty().bind(getBind("DeleteAccount"));
+        mvLogout.textProperty().bind(getBind("Logout"));
+
+        mvServerIP.getChildren().addAll(mvServerIPLabel, mvServerIPInput);
+        mvServerPort.getChildren().addAll(mvServerPortLabel, mvServerPortInput);
+        mvServerInput.getChildren().addAll(mvServerIP, mvServerPort);
         mvLangs.getChildren().addAll(mvToEN, mvToDE);
-        mvContainerLeft.getChildren().addAll(mvSetting1, mvSetting2, mvSetting3, mvSetting4, mvSetting5, mvSetting6, mvSetting7, mvLangs);
+        mvContainerLeft.getChildren().addAll(mvServerInput, mvServerConnect, mvCreateLogin, mvLogin, mvJoinChatroom, mvLeaveChatoom,  mvCreateChatroom, mvDeleteChatroom, mvChangePassword, mvDeleteLogin, mvLogout, mvLangs);
         menuView.setContent(mvContainerLeft);
+
 
 
     }

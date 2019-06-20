@@ -5,7 +5,6 @@ package chatroom_client;
 
 import javafx.application.Platform;
 import javafx.beans.binding.StringBinding;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -14,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class controller {
@@ -35,8 +35,8 @@ public class controller {
 
         windowEventHandlers();
         SettingsEventHandlers();
-        connectToServer();
-        startThreadListener();
+        //connectToServer();
+        //startThreadListener();
         startThreadStates();
 
 
@@ -44,19 +44,47 @@ public class controller {
 
     }
     //Manage States when not connected in a thread
-    private void startThreadStates() {
+    private void startStates() {
         r1 = () -> {
             while(true) {
+                //CheckConnection State
                 //If not Connected
-                if (checkConnection()) {
+                if (model.connected) {
                     //TODO States to active
-                    view.mvSetting1.setDisable(false);
-                    model.connected = true;
+                    view.mvCreateLogin.setDisable(false);
+                    view.mvLogin.setDisable(false);
+                    view.mvJoinChatroom.setDisable(false);
+                    view.mvLeaveChatoom.setDisable(false);
+                    view.mvCreateChatroom.setDisable(false);
+                    view.mvDeleteChatroom.setDisable(false);
+                    view.mvChangePassword.setDisable(false);
+                    view.mvDeleteLogin.setDisable(false);
+                    view.mvLogout.setDisable(false);
+                    displayStatus(getBind("ConnectedStatus"), model.ipAddress);
+
+
+
+                    while(model.connected){}
+
                 } else {
                     //TODO States to disabled
-                    view.mvSetting1.setDisable(true);
-                    model.connected = false;
+                    displayStatus(getBind("ConnectingFail"), model.ipAddress);
+                    view.mvCreateLogin.setDisable(true);
+                    view.mvJoinChatroom.setDisable(true);
+                    view.mvLogin.setDisable(true);
+                    view.mvLeaveChatoom.setDisable(true);
+                    view.mvCreateChatroom.setDisable(true);
+                    view.mvDeleteChatroom.setDisable(true);
+                    view.mvChangePassword.setDisable(true);
+                    view.mvDeleteLogin.setDisable(true);
+                    view.mvLogout.setDisable(true);
+
+                    while(!model.connected){}
+
                 }
+
+
+
             }
         };
         t1 = new Thread(r1);
@@ -64,7 +92,7 @@ public class controller {
     }
 
     //Derived from TestClient Example
-    private void startThreadListener() {
+    private void startThreadListener() { //TODO only use for messages from server, redirect answers!
         setReaderWriters(socket);
         // Create thread to read incoming messages
         r = () -> {
@@ -72,15 +100,18 @@ public class controller {
                 String msg;
                 try {
                     msg = socketIn.readLine();
+                    processMsg(msg);
                     System.out.println("Received: " + msg);
                 } catch (IOException e) {
                     break;
                 }
-                if (msg == null) break; // In case the server closes the socket
-
+                if (msg == null) {
+                    model.connected = false;
+                    break; // In case the server closes the socket
+                }
                 Platform.runLater(() -> {
                     displayInfo1(msg);
-                    view.cMessagesContainer.getChildren().add(new Label(msg));
+                    //view.cMessagesContainer.getChildren().add(new Label(msg));
                 });
             }
         };
@@ -88,18 +119,112 @@ public class controller {
         t.start();
     }
 
+    private void stopThreadListener(){
+        try{
+            t.stop();
+        }catch (Exception e){
 
-    private boolean connectToServer() { //No SSL
+        }
+    }
+
+    private static boolean validateIpAddress(String ipAddress) {
+        boolean formatOK = false;
+        // Check for validity (not complete, but not bad)
+        String ipPieces[] = ipAddress.split("\\."); // Must escape (see
+        // documentation)
+        // Must have 4 parts
+        if (ipPieces.length == 4) {
+            // Each part must be an integer 0 to 255
+            formatOK = true; // set to false on the first error
+            int byteValue = -1;
+            for (String s : ipPieces) {
+                byteValue = Integer.parseInt(s); // may throw
+                // NumberFormatException
+                if (byteValue < 0 | byteValue > 255) formatOK = false;
+            }
+        }
+        return formatOK;
+    }
+
+    private static boolean validatePortNumber(String portText) {
+        boolean formatOK = false;
         try {
-            displayStatus(getBind("ConnectingStatus"), model.ipAddress);
-            socket = new Socket(model.ipAddress, model.portNumber);
-            //setReaderWriters(socket);
-            System.out.println("Connected");
-            displayStatus(getBind("ConnectedStatus"), model.ipAddress);
+            int portNumber = Integer.parseInt(portText);
+            if (portNumber >= 1024 & portNumber <= 65535) {
+                formatOK = true;
+            }
+        } catch (NumberFormatException e) {
+        }
+        return formatOK;
+    }
+
+
+    private void processMsg(String msg){
+        //vars
+        String MessageType;
+        String ErrorMessage;
+        String name;
+        String target;
+        String Text;
+
+
+
+        String[] parts = msg.split("\\|");
+        int length = parts.length;
+        MessageType = parts[0];
+        if(MessageType.equals("Result")){
+
+            model.lastAnswer = msg;
+        }else if(MessageType.equals("MessageError")){
+            //TODO DISPLAY ERROR
+        }else if(MessageType.equals("MessageText")){
+            //TODO Show Message
+        }
+    }
+
+    private void resetLastAnswer(){model.lastAnswer=null;}
+
+
+    private boolean getSuccess(){
+        while(model.lastAnswer==null){displayInfo2("waiting for Answer...");} //wait for message to come in
+        displayInfo2("");
+        String[] parts = model.lastAnswer.split("\\|");
+        if(parts.length==2){resetLastAnswer();}//reset lastAnswer when only checking for success  bool
+
+        return Boolean.parseBoolean(parts[1]);
+
+    }
+
+    private void setToken(){
+        String[] parts = model.lastAnswer.split("\\|");
+        System.out.println(parts.toString());
+
+        model.token=parts[2];
+        resetLastAnswer(); //reset lastAnswer to null
+    }
+
+    private String[] getList(){
+        String[] parts = model.lastAnswer.split("\\|");
+        resetLastAnswer(); //reset lastAnswer to null
+        int listItems = parts.length-2;
+        String[] list = new String[listItems];
+        for(int i = 0; i<listItems;i++){
+            list[i] = parts[i+2];
+        }
+        return list;
+
+    }
+
+
+    private boolean connectToServer(String ip, int port) { //No SSL
+        try {
+            socket = new Socket(ip, port);
             model.connected = true;
+            model.ipAddress = ip;
+            model.portNumber = port;
+            startThreadListener();
             return true;
         }catch (IOException e){
-            displayStatus(getBind("ConnectingFail"), model.ipAddress);
             model.connected = false;
             return false;
         }finally {
@@ -108,9 +233,7 @@ public class controller {
 
     }
 
-    private boolean checkConnection(){
-       return socket.isConnected();
-    }
+
 
     private void setReaderWriters(Socket socket) {
         try {
@@ -145,18 +268,6 @@ public class controller {
         }
     }
 
-    private void SettingsEventHandlers() {
-        view.mvSetting1.setOnAction(e -> { //Create Login
-            String[] data = createLogin.display();
-            sendMessage("CreateLogin", data[0], data[1]);
-            //System.out.println("SENT");
-        });
-        view.mvSetting2.setOnAction(e -> { //Login
-            String[] data = login.display();
-            sendMessage("Login", data[0], data[1]);
-            //System.out.println("SENT");
-        });
-    }
 
     public void displayStatus(StringBinding status, String ip){
         view.sbServerStatus.textProperty().bind(status);
@@ -168,6 +279,82 @@ public class controller {
         view.sbInfo1.setText(" | " + info);
     }
 
+    public void displayInfo2(String info){
+        view.sbInfo2.setText(" | " + info);
+    }
+
+    private void updatePublicChatrooms(){
+        sendMessage("ListChatrooms", model.token);
+        if(getSuccess()){
+            model.publicChatrooms = getList();
+        }else{
+
+        }
+    }
+
+    private void printAnswer(){System.out.println(model.lastAnswer);}
+
+    private void SettingsEventHandlers() {
+        view.mvServerConnect.setOnAction(e -> { //Server Connect
+            String ip = view.mvServerIPInput.getText();
+            String port = view.mvServerPortInput.getText();
+            if(validateIpAddress(ip)
+                    && validatePortNumber(port)){
+                connectToServer(ip, Integer.parseInt(port));
+            }
+        });
+        view.mvCreateLogin.setOnAction(e -> { //Create Login
+            String[] data = createLogin.display();
+            sendMessage("CreateLogin", data[0], data[1]);
+
+            if(getSuccess()){
+
+            }
+            else{
+
+            }
+        });
+        view.mvLogin.setOnAction(e -> { //Login
+            String[] data = login.display();
+            String user = data[0];
+            String pass = data[1];
+
+
+            sendMessage("Login", user, pass);
+            if(getSuccess()){
+                setToken();
+                model.currentUser=user;
+                model.loggedIn = true;
+                System.out.println(model.token);
+            }else{
+                model.loggedIn = false;
+                System.out.println("FAILED!");
+            }
+        });
+        view.mvJoinChatroom.setOnAction(e -> { //Join Chatroom
+            updatePublicChatrooms();
+            String[] data = joinChatroom.display(model.publicChatrooms);
+            String choice = data[0];
+
+
+            sendMessage("JoinChatroom", model.token, choice, model.currentUser);
+            if(getSuccess()){
+                model.joinedRooms.add(choice);
+            }else{
+
+            }
+        });
+
+
+
+
+        view.mvLogout.setOnAction(e -> { //Logout
+            sendMessage("Logout");
+            getSuccess(); //Always true
+            model.loggedIn = false;
+        });
+
+    }
 
     private void windowEventHandlers(){
         //Window Event Handlers
