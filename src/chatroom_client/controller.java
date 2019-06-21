@@ -31,23 +31,26 @@ public class controller {
 
 
 
-    public controller(model model, view view) throws IOException {
+    controller(model model, view view) throws IOException {
         this.model = model;
         this.view = view;
 
         windowEventHandlers();
         SettingsEventHandlers();
         sendingEventHandler();
-        //connectToServer();
-        //startThreadListener();
         startStates();
         startConversationsListener();
 
         displayInfo2(getString("LoggedOut"));
+        displayStatus(getBind("Disconnected"), "");
 
 
     }
 
+    /**
+     * Disables all passed Control Elements
+     * @param controls
+     */
     private void disable(Control... controls){
         for(Control c: controls){
             if(!c.isDisabled()){
@@ -56,6 +59,10 @@ public class controller {
         }
     }
 
+    /**
+     * Enables all passed Control Elements
+     * @param controls
+     */
     private void enable(Control... controls){
         for(Control c: controls){
             if(c.isDisabled()){
@@ -64,7 +71,9 @@ public class controller {
         }
     }
 
-    //Manage States in a thread
+    /**
+     * Starts Thread that manages all Button States and so on
+     */
     private void startStates() {
         r1 = () -> {
             while(true) {
@@ -73,9 +82,10 @@ public class controller {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                //CheckConnection State
-                //If not Connected
-                if (model.connected) {
+
+                disable(view.wbMaximize); //doesnt scale Contents yet!
+
+                if (model.connected) { //CONNECTED
                     disable(view.mvServerConnect,
                             view.mvServerIPInput,
                             view.mvServerPortInput);
@@ -92,7 +102,7 @@ public class controller {
                                 view.mvDeleteLogin,
                                 view.mvLogout);
 
-                        if(model.currentChatroom.equals("")){
+                        if(model.currentChatroom.equals("")){ //Currently no Chatroom
                             disable(view.cSend, view.cTextField);
                         }else{
                             enable(view.cSend, view.cTextField);
@@ -101,7 +111,7 @@ public class controller {
                         Platform.runLater(() -> {
                             displayInfo2(getString("LoggedInAs") + " " + model.currentUser);
                         });
-                    }else{
+                    }else{ //NOT Logged in
                         enable(view.mvLogin);
                         disable(view.mvJoinChatroom,
                                 view.mvLeaveChatoom,
@@ -120,8 +130,7 @@ public class controller {
 
 
 
-                } else{
-                    //Not Connected
+                } else{//Not Connected
                     disable(view.mvServerDisconnect,
                             view.mvCreateLogin,
                             view.mvLogin,
@@ -148,8 +157,10 @@ public class controller {
         t1.start();
     }
 
-    //Derived from TestClient Example
-    private void startThreadListener() { //TODO only use for messages from server, redirect answers!
+    /**
+     * Starts the Socket Listener -> Derived from TestClient
+     */
+    private void startThreadListener() {
         setReaderWriters(socket);
         // Create thread to read incoming messages
         r = () -> {
@@ -168,8 +179,7 @@ public class controller {
                 }
 
                 Platform.runLater(() -> {
-                    displayInfo1(msg);
-                    //view.cMessagesContainer.getChildren().add(new Label(msg));
+                    //displayInfo1(msg);
                 });
             }
         };
@@ -177,6 +187,9 @@ public class controller {
         t.start();
     }
 
+    /**
+     * Stops the Listener Thread
+     */
     private void stopThreadListener(){
         try{
             t.stop();
@@ -185,6 +198,10 @@ public class controller {
         }
     }
 
+    /**
+     * Starts the Conversation Listener.
+     * Looks for new Messages stored in the Model and displays them in the View
+     */
     private void startConversationsListener() {
         // Create thread to read incoming messages
         r2 = () -> {
@@ -198,7 +215,9 @@ public class controller {
                         view.cMessagesContainer.getChildren().addAll(model.messages.get(model.currentChatroom));
                     }else{ //Key not yet in map
                         model.messages.put(model.currentChatroom, new ArrayList());
+
                     }
+
 
 
                 });
@@ -208,14 +227,12 @@ public class controller {
         t2.start();
     }
 
-    private void stopConversationsListener(){
-        try{
-            t2.stop();
-        }catch (Exception e){
 
-        }
-    }
-
+    /**
+     * Validates IP Addresses - Copied from TestClient -> (C) Richard Bradley
+     * @param ipAddress
+     * @return
+     */
     private static boolean validateIpAddress(String ipAddress) {
         boolean formatOK = false;
         // Check for validity (not complete, but not bad)
@@ -235,6 +252,11 @@ public class controller {
         return formatOK;
     }
 
+    /**
+     * Validates Ports - Copied from TestClient -> (C) Richard Bradley
+     * @param portText
+     * @return
+     */
     private static boolean validatePortNumber(String portText) {
         boolean formatOK = false;
         try {
@@ -248,44 +270,60 @@ public class controller {
     }
 
 
+    /**
+     * Processes the forwarded Message from the Listener
+     * Splits the Message and analyses it.
+     * @param msg
+     */
     private void processMsg(String msg){
         //vars
         String MessageType;
-        String ErrorMessage;
-        String name;
-        String target;
-        String Text;
-
 
         //wait(100);
         String[] parts = msg.split("\\|");
         int length = parts.length;
         MessageType = parts[0];
-        if(MessageType.equals("Result")){
+        switch (MessageType) {
+            case "Result":
 
-            model.lastAnswer = msg;
-        }else if(MessageType.equals("MessageError")){
-            Platform.runLater(() -> {
-                alertBox.display(parts[1]);
-            });
-        }else if(MessageType.equals("MessageText")){
-            Platform.runLater(() -> {
-                //TODO STORE MESSAGES, SORTED AFTER TARGET
-                String Message = parts[3];
-                String Sender = parts[1];
-                String Target = parts[2];
-                if(!Sender.equals(model.currentUser)) {
-                    //view.cMessagesContainer.getChildren().add(new message(message, Sender, Target, true));
-                    model.messages.get(Target).add(new message(Message, Sender, Target, true));
-                }
-            });
+                model.lastAnswer = msg;
+                break;
+            case "MessageError":
+                Platform.runLater(() -> {
+                    alertBox.display(parts[1]);
+                });
+                break;
+            case "MessageText":
+                Platform.runLater(() -> {
+                    String Message = parts[3];
+                    String Sender = parts[1];
+                    String Target = parts[2];
+                    if (!Sender.equals(model.currentUser)) {
+                        //view.cMessagesContainer.getChildren().add(new message(message, Sender, Target, true));
+                        model.messages.get(Target).add(new message(Message, Sender, Target, true));
+                    }
+                    view.cMessagesScroll.setVvalue(1.0);
+                    //theoretically at the wrong position. But otherwise it would
+                    //scroll down constantly.
+                });
 
 
+                break;
         }
     }
 
+    /**
+     * Resets last stored Server Message
+     * CRUCIAL for this program
+     *
+     * Only last Message is stored and deleted upon reading it
+     */
     private void resetLastAnswer(){model.lastAnswer="";}
 
+    /**
+     * Pauses the Thread to give the Server Time and avoid NullPointer Exceptions
+     * @param millis
+     */
     private void wait(int millis){
         try {
             Thread.sleep(millis);
@@ -294,6 +332,10 @@ public class controller {
         }
     }
 
+    /**
+     * Waits for incoming Server Message and evaluates it
+     * @return boolean
+     */
     private boolean getSuccess(){
         while(model.isAnswerReady() && model.lastAnswer.split("\\|").length!=1){
             wait(10);
@@ -310,11 +352,15 @@ public class controller {
             resetLastAnswer();
             return false;
         }
-        displayInfo1(parts.toString());
+        //displayInfo1(parts.toString());
         return Boolean.parseBoolean(parts[1]);
 
     }
 
+    /**
+     * Reads the lastAnswer and stores the Token in the Model
+     * MUST BE CALLED AFTER getSuccess()
+     */
     private void setToken(){
         wait(100);
         String[] parts = model.lastAnswer.split("\\|");
@@ -324,6 +370,11 @@ public class controller {
         resetLastAnswer(); //reset lastAnswer to null
     }
 
+    /**
+     * Reads the last Message and returns the requested list
+     * MUST BE CALLED AFTER getSuccess()
+     * @return
+     */
     private String[] getList(){
         wait(100);
         String[] parts = model.lastAnswer.split("\\|"); //May throw nullpointer Exception
@@ -358,6 +409,12 @@ public class controller {
         return result;
     }
 
+    /**
+     * Connects to specified IP and Port
+     * @param ip
+     * @param port
+     * @return
+     */
     private boolean connectToServer(String ip, int port) { //No SSL
         try {
 
@@ -380,6 +437,9 @@ public class controller {
 
     }
 
+    /**
+     * Performs Logout Actions -> Resets values
+     */
     private void logout(){
         model.loggedIn=false;
         model.currentUser="";
@@ -390,6 +450,9 @@ public class controller {
         displayInfo2(getString("LoggedOut"));
     }
 
+    /**
+     * Disconnect Tasks
+     */
     private void disconnect(){
         try {
             socket.close();
@@ -405,18 +468,25 @@ public class controller {
     }
 
 
-
+    /**
+     * Sets Readers and Writers for the Socket
+     * @param socket
+     */
     private void setReaderWriters(Socket socket) {
         try {
             socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             socketOut = new OutputStreamWriter(socket.getOutputStream());
 
         }catch (IOException ex){
-            displayInfo1("FAIL");
+            //displayInfo1("FAIL");
         }
 
     }
 
+    /**
+     * Sends a String to the Server
+     * @param text
+     */
     private void sendString(String text) {
 
         try {
@@ -427,6 +497,10 @@ public class controller {
         }
     }
 
+    /**
+     * Sends all passed Strings as a formatted Message to the Server
+     * @param parts
+     */
     private void sendMessage(String... parts){
         try {
             for (String part : parts) {
@@ -440,20 +514,36 @@ public class controller {
     }
 
 
-    public void displayStatus(StringBinding status, String ip){
+    /**
+     * Displays current Connection Status in the Status Bar
+     * @param status
+     * @param ip
+     */
+    private void displayStatus(StringBinding status, String ip){
         view.sbServerStatus.textProperty().bind(status);
         view.sbIP.setText(ip);
     }
 
-    //todo switch to StringBinds
+    /**
+     * Displays info
+     * @param info
+     */
     public void displayInfo1(String info){
         view.sbInfo1.setText(" | " + info);
     }
 
-    public void displayInfo2(String info){
+    /**
+     * Displays Login Info in the right Corner of the Statusbar
+     * @param info
+     */
+    private void displayInfo2(String info){
         view.sbInfo2.setText(info);
     }
 
+    /**
+     * Updates local list with server List
+     * And generates a joinable Server List where all already joined Servers are removed
+     */
     private void updatePublicChatrooms(){
         wait(100);
         sendMessage("ListChatrooms", model.token);
@@ -468,6 +558,9 @@ public class controller {
         }
     }
 
+    /**
+     * Updates the Left Panel View of all Chatrooms
+     */
     private void updateJoinedChatrooms() {
         view.cvConversationButtons.clear();
         for(String room : model.joinedRooms){
@@ -481,8 +574,10 @@ public class controller {
 
     }
 
-    private void printAnswer(){displayInfo1(model.lastAnswer);}
 
+    /**
+     * Event Handlers for the Setting Menu
+     */
     private void SettingsEventHandlers() {
         view.mvServerConnect.setOnAction(e -> { //Server Connect
             String ip = view.mvServerIPInput.getText();
@@ -490,6 +585,8 @@ public class controller {
             if(validateIpAddress(ip)
                     && validatePortNumber(port)){
                 connectToServer(ip, Integer.parseInt(port));
+            }else{
+                alertBox.display("IP or Port Format Problems");
             }
         });
 
@@ -499,7 +596,11 @@ public class controller {
         view.mvCreateLogin.setOnAction(e -> { //Create Login
             String[] data = createLogin.display();
             sendMessage("CreateLogin", data[0], data[1]);
-            getSuccess();
+            if(getSuccess()){
+
+            }else{
+                alertBox.display("Name already taken");
+            }
         });
         view.mvLogin.setOnAction(e -> { //Login
             String[] data = login.display();
@@ -515,7 +616,7 @@ public class controller {
                 displayInfo2(getString("LoggedInAs") + " " + model.currentUser);
             }else{
                 model.loggedIn = false;
-                displayInfo1("FAILED!");
+                alertBox.display("username & password do not match!");
             }
         });
         view.mvJoinChatroom.setOnAction(e -> { //Join Chatroom
@@ -531,7 +632,7 @@ public class controller {
                     updateJoinedChatrooms();
                     //System.out.println(view.cvConversationButtons.toString());
                 }else{
-
+                    alertBox.display("Join Error");
                 }
             }
 
@@ -548,7 +649,7 @@ public class controller {
                     model.currentChatroom="";
 
                 }else{
-
+                    alertBox.display("Leave Error");
                 }
             }
 
@@ -564,7 +665,7 @@ public class controller {
             if(getSuccess()){
 
             }else{
-
+                alertBox.display("Name taken or Token invalid");
             }
         });
         view.mvDeleteChatroom.setOnAction(e -> { //Delete Chatroom
@@ -578,7 +679,7 @@ public class controller {
             if(getSuccess()){
 
             }else{
-
+                alertBox.display("Only Owner can delete Chatroom");
             }
             //TODO ERROR MESSAGES -> ONLY CREATOR CAN DELETE...
         });
@@ -590,7 +691,7 @@ public class controller {
             if(getSuccess()){
 
             }else{
-
+                alertBox.display("Password Change Error");
             }
         });
         view.mvDeleteLogin.setOnAction(e -> { //Delete Login
@@ -598,7 +699,7 @@ public class controller {
             if(getSuccess()){
                 logout();
             }else{
-                //alertBox.display(get("TokenInvalid"));
+                alertBox.display(get("TokenInvalid"));
             }
 
 
@@ -614,6 +715,9 @@ public class controller {
 
     }
 
+    /**
+     * Event Handlers for the Window Controls
+     */
     private void windowEventHandlers(){
         //Window Event Handlers
         view.wbClose.setOnAction(e -> {
@@ -678,7 +782,10 @@ public class controller {
 
     }
 
-    public void sendingEventHandler(){
+    /**
+     * Event Handler for Sending a Message
+     */
+    private void sendingEventHandler(){
         view.cSend.setOnAction(e -> {
             String text = view.cTextField.getText();
 
@@ -687,6 +794,7 @@ public class controller {
                 sendMessage("SendMessage", model.token, model.currentChatroom, text);
                 if(getSuccess()){
                     view.cTextField.clear();
+                    view.cMessagesScroll.setVvalue(1.0);
                 }else{
 
                 }
@@ -694,6 +802,9 @@ public class controller {
         });
     }
 
+    /**
+     * Event Handler for the Chatroom Button in the Left Panel
+     */
     private void conversationButtonsHandlers(){
         for(JFXButton convButton : view.cvConversationButtons){
             convButton.setOnAction(e -> {
@@ -708,11 +819,11 @@ public class controller {
         }
     }
 
-    public StringBinding getBind(String key){
+    private StringBinding getBind(String key){
         return transl.createStringBinding(key);
     }
 
-    public String getString(String key){
+    private String getString(String key){
         return get(key);
     }
 

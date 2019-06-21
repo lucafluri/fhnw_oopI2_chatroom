@@ -51,6 +51,11 @@
     -fx-background-border: 0;
 
 }
+#chatView {
+    -fx-background-color: -grey1;
+    -fx-background-border: 0;
+
+}
 
 .menuView {
     -fx-background-color: -grey1;
@@ -83,6 +88,7 @@
 
 
 
+
 .text-field {
     -fx-background-color: -grey5;
     -fx-text-fill: white;
@@ -107,25 +113,26 @@
 
 #center {
     -fx-background-color: -grey0;
+    -set-alignment: center;
 }
 
 #chatView {
     -fx-background-color: -grey0;
 }
 
-#cMessageScroll {
+#cMessagesScroll {
     -fx-background-color: -grey0;
     -fx-alignment: center;
-    -fx-pref-height: 600px;
-    -fx-pref-width: 400px;
-    -fx-min-width: 300px;
-    -fx-max-width: 400px;
+
 
 }
 
-#cMessageContainer {
+#cMessagesContainer {
     -fx-background-color: -grey0;
-    -fx-alignment: center;
+    -set-alignment: center;
+    -fx-pref-width: 500px;
+    -fx-min-width: 300px;
+
 
 
 }
@@ -136,8 +143,8 @@
 }
 
 #messageHBox{
-        -fx-pref-width: 250px;
-
+        -fx-min-height: 25px;
+        -fx-alignment: center;
 }
 
 .scroll-pane > .viewport {
@@ -148,12 +155,17 @@
    -fx-background-color: -grey0;
 }
 
+
 #messageSent, #messageReceived{
     -fx-background-color: -grey3;
     -fx-padding: 2 20 2 20;
     -fx-border-style: solid inside;
     -fx-border-width: 1;
     -fx-border-color: -grey2;
+
+    -fx-min-width: 20px;
+    -fx-max-width: 300px;
+
 
 
 }
@@ -195,6 +207,7 @@
 
 #cControls {
     -fx-alignment: bottom-center;
+    -fx-padding: 20 0 0 0;
 }
 
 #cTextField {
@@ -202,13 +215,11 @@
 }
 
 #cSend {
-    -fx-pref-width: 50px;
-}
-
-.scene {
-    -fx-background-color: -grey0;
+    -fx-pref-width: 75px;
 }
 
 #statusbar {
     -fx-background-color: -grey1;
+    -fx-padding: 2 2 2 2;
+
 }

@@ -4,6 +4,9 @@ package chatroom_client;
 import java.lang.reflect.Array;
 import java.util.*;
 
+/**
+ * Model is just used for data storage
+ */
 public class model {
     boolean maximized = false;
     boolean settingsOpen = false;
@@ -21,8 +24,12 @@ public class model {
     ArrayList<String> contacts = new ArrayList<>();
     ArrayList<String> blockedUsers = new ArrayList<>();
     String[] publicChatrooms = new String[1];
-    TreeMap<String, ArrayList<message>> messages = new TreeMap(); //temporary Message Storage -> NOT PERSISTENT
 
+    /**
+     * Non Persistent Message Storage
+     * Messages are stores in a ArrayList and sorted according to Target(chatroom)
+     */
+    TreeMap<String, ArrayList<message>> messages = new TreeMap();
 
 
     boolean isAnswerReady(){

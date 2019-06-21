@@ -34,7 +34,7 @@ public class alertBox {
         layout.setPadding(new Insets(10));
         layout.setAlignment(Pos.CENTER);
         layout.getChildren().addAll(label, Buttons);
-
+        label.setWrapText(true);
 
 
 
@@ -49,7 +49,7 @@ public class alertBox {
 
 
         layout.getStyleClass().add("background");
-        Scene scene = new Scene(layout, 200, 100, Color.BLACK);
+        Scene scene = new Scene(layout, 200, 150, Color.BLACK);
         scene.getStylesheets().add("chatroom_client/styles.css");
         stage.setScene(scene);
         stage.showAndWait();

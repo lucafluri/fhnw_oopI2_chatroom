@@ -4,16 +4,12 @@ package chatroom_client;
 
 import com.jfoenix.controls.JFXButton;
 import javafx.beans.binding.StringBinding;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -24,29 +20,28 @@ import java.util.HashSet;
 
 public class view {
     //Main Elements
-    public model model;
-    public Stage stage;
+    model model;
+    Stage stage;
 
-    public BorderPane root = new BorderPane();
-    public ScrollPane chatView = new ScrollPane(); //cv
-    public ScrollPane menuView = new ScrollPane(); //mv
-    public HBox windowBar = new HBox(); //wb
-    public HBox statusbar = new HBox(); //sb
-    public VBox center = new VBox(); //c
+    BorderPane root = new BorderPane();
+    ScrollPane chatView = new ScrollPane(); //cv
+    ScrollPane menuView = new ScrollPane(); //mv
+    HBox windowBar = new HBox(); //wb
+    HBox statusbar = new HBox(); //sb
+    VBox center = new VBox(); //c
 
     //CenterElements
-    public ScrollPane cMessagesScroll = new ScrollPane();
-    public VBox cMessagesContainer = new VBox();
-    public HBox cControls = new HBox();
-    public TextField cTextField = new TextField();
-    public JFXButton cSend = new JFXButton();
+    ScrollPane cMessagesScroll = new ScrollPane();
+    VBox cMessagesContainer = new VBox();
+    HBox cControls = new HBox();
+    TextField cTextField = new TextField();
+    JFXButton cSend = new JFXButton();
     Label charsLeft = new Label();
-    //TODO MESSAGE CLASS AND TESTS
 
     //ChatView Elements
-    public VBox cvContainerLeft = new VBox();
+    VBox cvContainerLeft = new VBox();
     HashSet<JFXButton> cvConversationButtons = new HashSet<>();
-    public JFXButton cvTestConv = new JFXButton("TEST CONVERSATION");
+    JFXButton cvTestConv = new JFXButton("TEST CONVERSATION");
 
     //MenuView Elements
     VBox mvContainerLeft = new VBox();
@@ -100,7 +95,7 @@ public class view {
         this.model = model;
         this.stage = stage;
 
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initStyle(StageStyle.UNDECORATED); //Custom Window Elements
 
 
 
@@ -127,13 +122,18 @@ public class view {
     }
 
 
-
+    /**
+     * Setup for Statusbar
+     */
     private void setStatusbarView() {
 
         statusbar.getChildren().addAll(sbServerStatus, sbIP, sbInfo1, sbRegion1, sbInfo2);
         HBox.setHgrow(sbRegion1, Priority.ALWAYS);
     }
 
+    /**
+     * Setup for Center View
+     */
     private void setCenterView() {
         cSend.textProperty().bind(getBind("send"));
         cMessagesContainer.setSpacing(2);
@@ -145,6 +145,9 @@ public class view {
 
     }
 
+    /**
+     * Setup for Conversations View (Left Panel)
+     */
     private void setChatView() {
         //Empty Conversation View -> TODO Add label if no conversation open
 
@@ -155,6 +158,9 @@ public class view {
 
     }
 
+    /**
+     * Setup for Settings/Menu Bar (Also left Panel)
+     */
     private void setMenuView() {
         mvContainerLeft.setSpacing(2);
 
@@ -191,20 +197,14 @@ public class view {
     }
 
 
-
+    /**
+     * Setup for Window Control elements and menu button
+     */
     private void setWindowBar(){
         wbSpacer = new Region();
-        Image menuIcon = new Image("assets/HamMenu.png");
-        //wbHamMenu = new Button("", new ImageView(menuIcon));
         wbHamMenu = new Button("|menu|");
-        Image minIcon = new Image("assets/minimize.png");
-        //wbMinimize = new Button("", new ImageView(minIcon));
         wbMinimize = new Button("|min|");
-        Image maxIcon = new Image("assets/maximize.png");
-        //wbMaximize = new Button("", new ImageView(maxIcon));
         wbMaximize = new Button("|max|");
-        Image closeIcon = new Image("assets/close.png");
-        //wbClose = new Button("", new ImageView(closeIcon));
         wbClose = new Button("|close|");
 
 
@@ -222,14 +222,15 @@ public class view {
         windowBar.getChildren().addAll(wbHamMenu, wbSpacer, wbMinimize, wbMaximize, wbClose);
     }
 
-
+    /**
+     * Stringbinding Shortcut
+     * @param key
+     * @return
+     */
     public StringBinding getBind(String key){
         return transl.createStringBinding(key);
     }
 
-    public String getString(String key){
-        return transl.get(key);
-    }
 
     public void start(){ stage.show();}
     public void stop() {
@@ -259,7 +260,6 @@ public class view {
         cvContainerLeft.setId("cvContainerLeft");
         cvContainerLeft.getStyleClass().add("cvContainerLeft");
         cvTestConv.setId("cvTestConv");
-        //mv
         mvContainerLeft.setId("mvContainerLeft");
         mvServerIPLabel.setId("mvServerIPLabel");
         mvServerPortLabel.setId("mvServerPortLabel");
