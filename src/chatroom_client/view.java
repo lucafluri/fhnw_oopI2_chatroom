@@ -136,6 +136,7 @@ public class view {
 
     private void setCenterView() {
         cSend.textProperty().bind(getBind("send"));
+        cMessagesContainer.setSpacing(2);
 
 
         cMessagesScroll.setContent(cMessagesContainer);
@@ -146,13 +147,17 @@ public class view {
 
     private void setChatView() {
         //Empty Conversation View -> TODO Add label if no conversation open
+
+        cvContainerLeft.setSpacing(2);
         cvConversationButtons.add(cvTestConv);
-        cvContainerLeft.getChildren().addAll(cvConversationButtons);
+        //cvContainerLeft.getChildren().addAll(cvConversationButtons);
         chatView.setContent(cvContainerLeft);
 
     }
 
     private void setMenuView() {
+        mvContainerLeft.setSpacing(2);
+
         //language binds
         mvServerIPLabel.textProperty().bind(getBind("SetServer"));
         mvServerPortLabel.textProperty().bind(getBind("SetPort"));

@@ -24,8 +24,8 @@ public class message extends HBox {
         Region region = new Region();
         VBox messageBox = new VBox();
 
-        messageBox.getChildren().addAll(senderLabel, message);
-        this.setHgrow(region, Priority.ALWAYS);
+        message.setWrapText(true);
+
 
         if(received){
             messageBox.setAlignment(Pos.CENTER_LEFT);
@@ -42,14 +42,16 @@ public class message extends HBox {
 
         if(received){
             messageBox.setId("messageReceived");
+            messageBox.getChildren().addAll(senderLabel, message);
             this.getChildren().addAll(messageBox, region);
 
         } else{
             messageBox.setId("messageSent");
+            messageBox.getChildren().addAll(message);
             this.getChildren().addAll(region, messageBox);
         }
 
-
+        this.setHgrow(region, Priority.ALWAYS);
 
 
     }

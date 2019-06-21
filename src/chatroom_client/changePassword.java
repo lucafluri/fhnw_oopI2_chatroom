@@ -75,7 +75,7 @@ public class changePassword {
 
 
         layout.getStyleClass().add("background");
-        Scene scene = new Scene(layout, 200, 200, Color.BLACK);
+        Scene scene = new Scene(layout, 200, 100, Color.BLACK);
         scene.getStylesheets().add("chatroom_client/styles.css");
         stage.setScene(scene);
         stage.showAndWait();

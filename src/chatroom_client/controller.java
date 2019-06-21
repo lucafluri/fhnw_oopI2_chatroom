@@ -82,7 +82,7 @@ public class controller {
                     enable(view.mvServerDisconnect,
                             view.mvCreateLogin,
                             view.mvLogin);
-                    if(model.loggedIn){ //Not Logged In
+                    if(model.loggedIn){ //Logged In
                         disable(view.mvLogin);
                         enable(view.mvJoinChatroom,
                                 view.mvLeaveChatoom,
@@ -90,9 +90,13 @@ public class controller {
                                 view.mvDeleteChatroom,
                                 view.mvChangePassword,
                                 view.mvDeleteLogin,
-                                view.mvLogout,
-                                view.cSend,
-                                view.cTextField);
+                                view.mvLogout);
+
+                        if(model.currentChatroom.equals("")){
+                            disable(view.cSend, view.cTextField);
+                        }else{
+                            enable(view.cSend, view.cTextField);
+                        }
 
                         Platform.runLater(() -> {
                             displayInfo2(getString("LoggedInAs") + " " + model.currentUser);
@@ -291,7 +295,6 @@ public class controller {
     }
 
     private boolean getSuccess(){
-        System.out.println("Success checking...");
         while(model.isAnswerReady() && model.lastAnswer.split("\\|").length!=1){
             wait(10);
         } //wait for message to come in
@@ -302,7 +305,7 @@ public class controller {
             //System.out.println("ResetAnswer");
         }//reset lastAnswer when only checking for success  bool
         else if(parts.length<=1){
-            System.out.println(parts[0]);
+            //System.out.println(parts[0]);
             //alertBox.display("Error, Please Try Again");
             resetLastAnswer();
             return false;
@@ -526,7 +529,7 @@ public class controller {
                 if(getSuccess()){
                     model.joinedRooms.add(choice);
                     updateJoinedChatrooms();
-                    System.out.println(view.cvConversationButtons.toString());
+                    //System.out.println(view.cvConversationButtons.toString());
                 }else{
 
                 }
@@ -542,6 +545,7 @@ public class controller {
                 if(getSuccess()){
                     model.joinedRooms.remove(choice);
                     updateJoinedChatrooms();
+                    model.currentChatroom="";
 
                 }else{
 
@@ -677,15 +681,15 @@ public class controller {
     public void sendingEventHandler(){
         view.cSend.setOnAction(e -> {
             String text = view.cTextField.getText();
-            if(getSuccess()){
 
-            }else{
-                
-            }
-
-            //view.cMessagesContainer.getChildren().add(new message(text, model.currentUser, model.currentChatroom,false));
             if(model.messages.containsKey(model.currentChatroom)) {
                 model.messages.get(model.currentChatroom).add(new message(text, model.currentUser, model.currentChatroom, false));
+                sendMessage("SendMessage", model.token, model.currentChatroom, text);
+                if(getSuccess()){
+                    view.cTextField.clear();
+                }else{
+
+                }
             }
         });
     }
