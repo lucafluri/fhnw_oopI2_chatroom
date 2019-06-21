@@ -7,11 +7,13 @@ import javafx.scene.layout.*;
 public class message extends HBox {
     String msg;
     String sender;
+    String target;
     boolean received;
 
-    public message(String msg, String sender, boolean received){
+    public message(String msg, String sender, String target, boolean received){
         this.msg = msg;
         this.sender = sender;
+        this.target = target;
         this.received = received;
 
 

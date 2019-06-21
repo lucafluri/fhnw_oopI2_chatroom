@@ -221,7 +221,9 @@ public class controller {
             });
         }else if(MessageType.equals("MessageText")){
             Platform.runLater(() -> {
-                view.cMessagesContainer.getChildren().add(new message(parts[3], parts[2], true));
+                //TODO STORE MESSAGES, SORTED AFTER TARGET
+                //view.cMessagesContainer.getChildren().add(new message(parts[3], parts[2], true));
+
             });
 
 
@@ -567,7 +569,7 @@ public class controller {
             if(model.settingsOpen){
                 view.root.setLeft(view.menuView);
                 //view.wbHamMenu.setGraphic(new ImageView(new Image("assets/HamMenuOpen.png")));
-                view.wbHamMenu.setText("|conversations|");
+                view.wbHamMenu.setText("|<--|");
             }else{
                 view.root.setLeft(view.chatView);
                 //view.wbHamMenu.setGraphic(new ImageView(new Image("assets/HamMenu.png")));
@@ -591,7 +593,8 @@ public class controller {
     public void sendingEventHandler(){
         view.cSend.setOnAction(e -> {
             String text = view.cTextField.getText();
-            view.cMessagesContainer.getChildren().add(new message(text, model.currentUser, false));
+            sendMessage("SendMessage", model.token, "cats", text);
+            //view.cMessagesContainer.getChildren().add(new message(text, model.currentUser, false));
         });
     }
 

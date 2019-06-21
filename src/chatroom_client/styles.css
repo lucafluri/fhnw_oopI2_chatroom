@@ -24,6 +24,10 @@
     -fx-background-border: 2;
 }
 
+.button:hover {
+    -fx-background-color: -grey4;
+}
+
 .label {
     -fx-text-fill: -white;
 }
@@ -153,4 +157,8 @@
 
 .scene {
     -fx-background-color: -grey0;
+}
+
+#statusbar {
+    -fx-background-color: -grey1;
 }

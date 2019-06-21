@@ -128,6 +128,7 @@ public class view {
     private void setStatusbarView() {
 
         statusbar.getChildren().addAll(sbServerStatus, sbIP, sbInfo1, sbRegion1, sbInfo2);
+        HBox.setHgrow(sbRegion1, Priority.ALWAYS);
     }
 
     private void setCenterView() {
