@@ -23,7 +23,7 @@ public class model {
     ArrayList<String> contacts = new ArrayList<>();
     ArrayList<String> blockedUsers = new ArrayList<>();
     String[] publicChatrooms = new String[1];
-    TreeMap<String, message[]> messages = new TreeMap();
+    TreeMap<String, ArrayList<message>> messages = new TreeMap(); //temporary Message Storage -> NOT PERSISTENT
 
 
 

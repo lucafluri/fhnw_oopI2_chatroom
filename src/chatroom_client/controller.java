@@ -43,7 +43,7 @@ public class controller {
         //startThreadListener();
         startStates();
 
-
+        displayInfo2(getString("LoggedOut"));
 
 
     }
@@ -90,7 +90,13 @@ public class controller {
                                 view.mvDeleteChatroom,
                                 view.mvChangePassword,
                                 view.mvDeleteLogin,
-                                view.mvLogout);
+                                view.mvLogout,
+                                view.cSend,
+                                view.cTextField);
+
+                        Platform.runLater(() -> {
+                            displayInfo2(getString("LoggedInAs") + " " + model.currentUser);
+                        });
                     }else{
                         enable(view.mvLogin);
                         disable(view.mvJoinChatroom,
@@ -99,7 +105,13 @@ public class controller {
                                 view.mvDeleteChatroom,
                                 view.mvChangePassword,
                                 view.mvDeleteLogin,
-                                view.mvLogout);
+                                view.mvLogout,
+                                view.cSend,
+                                view.cTextField);
+                        Platform.runLater(() -> {
+                            displayInfo2(getString("LoggedOut"));
+                        });
+
                     }
 
 
@@ -115,7 +127,9 @@ public class controller {
                             view.mvDeleteChatroom,
                             view.mvChangePassword,
                             view.mvDeleteLogin,
-                            view.mvLogout);
+                            view.mvLogout,
+                            view.cSend,
+                            view.cTextField);
                     enable(view.mvServerConnect,
                             view.mvServerIPInput,
                             view.mvServerPortInput);
@@ -150,7 +164,7 @@ public class controller {
                 }
 
                 Platform.runLater(() -> {
-                    displayInfo2(msg);
+                    displayInfo1(msg);
                     //view.cMessagesContainer.getChildren().add(new Label(msg));
                 });
             }
@@ -208,7 +222,7 @@ public class controller {
         String Text;
 
 
-
+        //wait(100);
         String[] parts = msg.split("\\|");
         int length = parts.length;
         MessageType = parts[0];
@@ -250,13 +264,13 @@ public class controller {
             resetLastAnswer();
             //System.out.println("ResetAnswer");
         }//reset lastAnswer when only checking for success  bool
-        else if(parts.length==1){
+        else if(parts.length<=1){
             System.out.println(parts[0]);
             //alertBox.display("Error, Please Try Again");
             resetLastAnswer();
             return false;
         }
-        displayInfo2(parts.toString());
+        displayInfo1(parts.toString());
         return Boolean.parseBoolean(parts[1]);
 
     }
@@ -333,6 +347,7 @@ public class controller {
         model.currentUser="";
         model.token="";
         model.currentChatroom="";
+        displayInfo2(getString("LoggedOut"));
     }
 
     private void disconnect(){
@@ -357,7 +372,7 @@ public class controller {
             socketOut = new OutputStreamWriter(socket.getOutputStream());
 
         }catch (IOException ex){
-            displayInfo2("FAIL");
+            displayInfo1("FAIL");
         }
 
     }
@@ -396,7 +411,7 @@ public class controller {
     }
 
     public void displayInfo2(String info){
-        view.sbInfo2.setText(" | " + info);
+        view.sbInfo2.setText(info);
     }
 
     private void updatePublicChatrooms(){
@@ -407,7 +422,7 @@ public class controller {
         }
     }
 
-    private void printAnswer(){displayInfo2(model.lastAnswer);}
+    private void printAnswer(){displayInfo1(model.lastAnswer);}
 
     private void SettingsEventHandlers() {
         view.mvServerConnect.setOnAction(e -> { //Server Connect
@@ -438,10 +453,10 @@ public class controller {
                 setToken();
                 model.currentUser=user;
                 model.loggedIn = true;
-                displayInfo2(model.token);
+                displayInfo2(getString("LoggedInAs") + " " + model.currentUser);
             }else{
                 model.loggedIn = false;
-                displayInfo2("FAILED!");
+                displayInfo1("FAILED!");
             }
         });
         view.mvJoinChatroom.setOnAction(e -> { //Join Chatroom
@@ -449,32 +464,40 @@ public class controller {
             String[] data = chatroomJoin.display(model.publicChatrooms);
             String choice = data[0];
 
-            sendMessage("JoinChatroom", model.token, choice, model.currentUser);
-            if(getSuccess()){
-                model.joinedRooms.add(choice);
-            }else{
+            if(choice!=null && choice.length() > 1){
+                System.out.println("Choice: |" + choice + "|");
+                sendMessage("JoinChatroom", model.token, choice, model.currentUser);
+                if(getSuccess()){
+                    model.joinedRooms.add(choice);
+                }else{
 
+                }
             }
+
 
         });
         view.mvLeaveChatoom.setOnAction(e -> { //Leave Chatroom
             String[] data = chatroomLeave.display(model.joinedRooms.toArray(new String[0]));
             String choice = data[0];
-            if(choice!=null || !choice.equals(" ")){model.joinedRooms.remove(choice);}
+            if(choice!=null && choice.length() > 1){
+                model.joinedRooms.remove(choice);
+                sendMessage("LeaveChatroom", model.token, choice, model.currentUser);
+                if(getSuccess()){
 
-            sendMessage("LeaveChatroom", model.token, choice, model.currentUser);
-            if(getSuccess()){
+                }else{
 
-            }else{
-
+                }
             }
+
+
+
         });
         view.mvCreateChatroom.setOnAction(e -> { //Create Chatroom
             String[] data = chatroomCreate.display();
             String choice = data[0];
             String isPublic = data[1];
 
-            sendMessage("CreateChatroom", model.token, choice, isPublic);
+            if(choice!=null && !choice.equals(" ")){sendMessage("CreateChatroom", model.token, choice, isPublic);}
             if(getSuccess()){
 
             }else{
@@ -485,7 +508,7 @@ public class controller {
             updatePublicChatrooms();
             String[] data = chatroomDelete.display(model.publicChatrooms);
             String choice = data[0];
-            if(choice!=null){model.joinedRooms.remove(choice);}
+            if(choice!=null && !choice.equals(" ")){model.joinedRooms.remove(choice);}
 
 
             sendMessage("DeleteChatroom", model.token, choice);
@@ -499,7 +522,8 @@ public class controller {
         view.mvChangePassword.setOnAction(e -> { //ChangePassword
             String[] data = changePassword.display();
             String newPass = data[0];
-            sendMessage("ChangePassword", model.token, newPass);
+            if(newPass.length()>=3){sendMessage("ChangePassword", model.token, newPass);}
+
             if(getSuccess()){
 
             }else{
@@ -509,7 +533,7 @@ public class controller {
         view.mvDeleteLogin.setOnAction(e -> { //Delete Login
             if(confirmBox.display()){sendMessage("DeleteLogin", model.token);}
             if(getSuccess()){
-
+                logout();
             }else{
                 //alertBox.display(get("TokenInvalid"));
             }
@@ -521,8 +545,8 @@ public class controller {
         view.mvLogout.setOnAction(e -> { //Logout
             sendMessage("Logout");
             getSuccess(); //Always true
-            model.loggedIn = false;
-            model.token=null;
+            logout();
+
         });
 
     }
@@ -596,6 +620,10 @@ public class controller {
             sendMessage("SendMessage", model.token, "cats", text);
             //view.cMessagesContainer.getChildren().add(new message(text, model.currentUser, false));
         });
+    }
+
+    private void conversationButtonsHandlers(){
+
     }
 
     public StringBinding getBind(String key){
