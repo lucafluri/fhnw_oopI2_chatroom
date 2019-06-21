@@ -46,7 +46,7 @@ public class chatroomJoin {
         //LOGIC
 
         publicServerList.setItems(FXCollections.observableArrayList(publicChatrooms));
-        publicServerList.setValue(publicChatrooms[0]);
+        //publicServerList.setValue(publicChatrooms[0]);
 
 
 

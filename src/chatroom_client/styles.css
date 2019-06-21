@@ -37,6 +37,10 @@
 
 }
 
+.SenderLabel {
+    -fx-font-weight: bold;
+}
+
 #mvContainerLeft {
     -fx-background-color: -grey1;
     -fx-pref-width: 200px;
@@ -77,6 +81,10 @@
     -fx-background-color: -grey0;
 }
 
+#messageHBox{
+    -fx-pref-width: 300px;
+    -fx-min-width: 300px;
+}
 
 .text-field {
     -fx-background-color: -grey5;

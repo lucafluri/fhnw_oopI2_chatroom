@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.scene.paint.Color;
 
+import java.util.HashSet;
+
 
 public class view {
     //Main Elements
@@ -43,6 +45,7 @@ public class view {
 
     //ChatView Elements
     public VBox cvContainerLeft = new VBox();
+    HashSet<JFXButton> cvConversationButtons = new HashSet<>();
     public JFXButton cvTestConv = new JFXButton("TEST CONVERSATION");
 
     //MenuView Elements
@@ -142,7 +145,9 @@ public class view {
     }
 
     private void setChatView() {
-        cvContainerLeft.getChildren().addAll(cvTestConv);
+        //Empty Conversation View -> TODO Add label if no conversation open
+        cvConversationButtons.add(cvTestConv);
+        cvContainerLeft.getChildren().addAll(cvConversationButtons);
         chatView.setContent(cvContainerLeft);
 
     }

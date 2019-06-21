@@ -3,18 +3,17 @@ package chatroom_client;
 
 
 
+import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.scene.control.Control;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import static chatroom_client.transl.get;
@@ -25,12 +24,12 @@ public class controller {
     private double xOffset = 0;
     private double yOffset = 0;
     private Socket socket = null;
-    BufferedReader socketIn;
-    OutputStreamWriter socketOut;
-    Runnable r;
-    Thread t;
-    Runnable r1;
-    Thread t1;
+    private BufferedReader socketIn;
+    private OutputStreamWriter socketOut;
+    private Runnable r, r1, r2;
+    private Thread t, t1, t2;
+
+
 
     public controller(model model, view view) throws IOException {
         this.model = model;
@@ -42,6 +41,7 @@ public class controller {
         //connectToServer();
         //startThreadListener();
         startStates();
+        startConversationsListener();
 
         displayInfo2(getString("LoggedOut"));
 
@@ -181,6 +181,37 @@ public class controller {
         }
     }
 
+    private void startConversationsListener() {
+        // Create thread to read incoming messages
+        r2 = () -> {
+            while (true) {
+                wait(100);
+
+                Platform.runLater(() -> {
+                    conversationButtonsHandlers();
+                    view.cMessagesContainer.getChildren().clear();
+                    if(model.messages.containsKey(model.currentChatroom)){
+                        view.cMessagesContainer.getChildren().addAll(model.messages.get(model.currentChatroom));
+                    }else{ //Key not yet in map
+                        model.messages.put(model.currentChatroom, new ArrayList());
+                    }
+
+
+                });
+            }
+        };
+        t2 = new Thread(r2);
+        t2.start();
+    }
+
+    private void stopConversationsListener(){
+        try{
+            t2.stop();
+        }catch (Exception e){
+
+        }
+    }
+
     private static boolean validateIpAddress(String ipAddress) {
         boolean formatOK = false;
         // Check for validity (not complete, but not bad)
@@ -236,8 +267,13 @@ public class controller {
         }else if(MessageType.equals("MessageText")){
             Platform.runLater(() -> {
                 //TODO STORE MESSAGES, SORTED AFTER TARGET
-                //view.cMessagesContainer.getChildren().add(new message(parts[3], parts[2], true));
-
+                String Message = parts[3];
+                String Sender = parts[1];
+                String Target = parts[2];
+                if(!Sender.equals(model.currentUser)) {
+                    //view.cMessagesContainer.getChildren().add(new message(message, Sender, Target, true));
+                    model.messages.get(Target).add(new message(Message, Sender, Target, true));
+                }
             });
 
 
@@ -255,6 +291,7 @@ public class controller {
     }
 
     private boolean getSuccess(){
+        System.out.println("Success checking...");
         while(model.isAnswerReady() && model.lastAnswer.split("\\|").length!=1){
             wait(10);
         } //wait for message to come in
@@ -336,8 +373,6 @@ public class controller {
         }catch (IOException e){
             model.connected = false;
             return false;
-        }finally {
-
         }
 
     }
@@ -347,6 +382,8 @@ public class controller {
         model.currentUser="";
         model.token="";
         model.currentChatroom="";
+        model.joinedRooms.clear();
+        updateJoinedChatrooms();
         displayInfo2(getString("LoggedOut"));
     }
 
@@ -419,7 +456,26 @@ public class controller {
         sendMessage("ListChatrooms", model.token);
         if(getSuccess()){
             model.publicChatrooms = getList();
+            for(String room : model.publicChatrooms){
+                model.joinableRooms.add(room);
+                if(model.joinedRooms.contains(room)){
+                    model.joinableRooms.remove(room);
+                }
+            }
         }
+    }
+
+    private void updateJoinedChatrooms() {
+        view.cvConversationButtons.clear();
+        for(String room : model.joinedRooms){
+            view.cvConversationButtons.add(new JFXButton(room));
+        }
+        view.cvContainerLeft.getChildren().clear();
+        view.cvContainerLeft.getChildren().addAll(view.cvConversationButtons);
+
+            //view.chatView.setContent(view.cvContainerLeft);
+
+
     }
 
     private void printAnswer(){displayInfo1(model.lastAnswer);}
@@ -461,14 +517,16 @@ public class controller {
         });
         view.mvJoinChatroom.setOnAction(e -> { //Join Chatroom
             updatePublicChatrooms();
-            String[] data = chatroomJoin.display(model.publicChatrooms);
+            String[] data = chatroomJoin.display(model.joinableRooms.toArray(new String[0]));
             String choice = data[0];
 
             if(choice!=null && choice.length() > 1){
-                System.out.println("Choice: |" + choice + "|");
+                // System.out.println("Choice: |" + choice + "|");
                 sendMessage("JoinChatroom", model.token, choice, model.currentUser);
                 if(getSuccess()){
                     model.joinedRooms.add(choice);
+                    updateJoinedChatrooms();
+                    System.out.println(view.cvConversationButtons.toString());
                 }else{
 
                 }
@@ -480,9 +538,10 @@ public class controller {
             String[] data = chatroomLeave.display(model.joinedRooms.toArray(new String[0]));
             String choice = data[0];
             if(choice!=null && choice.length() > 1){
-                model.joinedRooms.remove(choice);
                 sendMessage("LeaveChatroom", model.token, choice, model.currentUser);
                 if(getSuccess()){
+                    model.joinedRooms.remove(choice);
+                    updateJoinedChatrooms();
 
                 }else{
 
@@ -557,6 +616,7 @@ public class controller {
             view.stop();
             if(t!=null){t.stop();}
             if(t1!=null){t1.stop();}
+            if(t2!=null){t2.stop();}
             if(socket!=null){
                 try {
                     socket.close();
@@ -617,13 +677,31 @@ public class controller {
     public void sendingEventHandler(){
         view.cSend.setOnAction(e -> {
             String text = view.cTextField.getText();
-            sendMessage("SendMessage", model.token, "cats", text);
-            //view.cMessagesContainer.getChildren().add(new message(text, model.currentUser, false));
+            if(getSuccess()){
+
+            }else{
+                
+            }
+
+            //view.cMessagesContainer.getChildren().add(new message(text, model.currentUser, model.currentChatroom,false));
+            if(model.messages.containsKey(model.currentChatroom)) {
+                model.messages.get(model.currentChatroom).add(new message(text, model.currentUser, model.currentChatroom, false));
+            }
         });
     }
 
     private void conversationButtonsHandlers(){
-
+        for(JFXButton convButton : view.cvConversationButtons){
+            convButton.setOnAction(e -> {
+                model.currentChatroom = convButton.getText();
+            });
+            if(convButton.getText().equals(model.currentChatroom)){
+                convButton.setDisable(true);
+            }
+            else{
+                convButton.setDisable(false);
+            }
+        }
     }
 
     public StringBinding getBind(String key){

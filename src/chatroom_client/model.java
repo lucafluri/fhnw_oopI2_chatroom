@@ -2,9 +2,7 @@ package chatroom_client;
 
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class model {
     boolean maximized = false;
@@ -17,8 +15,8 @@ public class model {
     String currentChatroom = "";
     String token = "";
     String lastAnswer = "";
-    ArrayList<String> joinedRooms = new ArrayList<>();
-    String[] joinableRooms = new String[1];
+    HashSet<String> joinedRooms = new HashSet();
+    HashSet<String> joinableRooms = new HashSet<>();
     boolean loggedIn = false;
     ArrayList<String> contacts = new ArrayList<>();
     ArrayList<String> blockedUsers = new ArrayList<>();
