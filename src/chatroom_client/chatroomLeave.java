@@ -1,6 +1,7 @@
 package chatroom_client;
 
 
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -45,6 +47,19 @@ public class chatroomLeave {
         publicServerList.setItems(FXCollections.observableArrayList(publicChatrooms));
         //publicServerList.setValue(publicChatrooms[0]);
 
+        //Disable Binding
+        BooleanBinding validInputBinding = new BooleanBinding() {
+            {
+                super.bind(publicServerList.valueProperty());
+            }
+
+            @Override
+            protected boolean computeValue() {
+                return (publicServerList.getValue() == null);
+            }
+        };
+
+        Join.disableProperty().bind(validInputBinding);
 
         //Event Handlers
         Join.setOnAction(e -> {
@@ -61,8 +76,8 @@ public class chatroomLeave {
 
 
 
-
-        Scene scene = new Scene(layout, 200, 200);
+        layout.getStyleClass().add("background");
+        Scene scene = new Scene(layout, 200, 200, Color.BLACK);
         scene.getStylesheets().add("chatroom_client/styles.css");
         stage.setScene(scene);
         stage.showAndWait();

@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -23,7 +24,7 @@ public class confirmBox {
         stage.initStyle(StageStyle.UTILITY);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle(transl.get("Confirm"));
-        Button OK = new Button(transl.get("ok"));
+        Button OK = new Button(transl.get("delete"));
         Button Cancel = new Button(transl.get("cancel"));
         HBox Buttons = new HBox();
         Buttons.setPadding(new Insets(10));
@@ -54,8 +55,8 @@ public class confirmBox {
 
 
 
-
-        Scene scene = new Scene(layout, 200, 200);
+        layout.getStyleClass().add("background");
+        Scene scene = new Scene(layout, 200, 100, Color.BLACK);
         scene.getStylesheets().add("chatroom_client/styles.css");
         stage.setScene(scene);
         stage.showAndWait();

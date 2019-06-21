@@ -8,8 +8,9 @@
     -grey5: #505050;
     -white: #ffffff;
     -buttonHeight: 30px;
-    -buttonWidth: 150px;
-    -buttonSmallWIdth: 75px;
+    -buttonWidth: 200px;
+    -panelWidth: 200px;
+    -buttonSmallWidth: 100px;
 }
 
 
@@ -27,6 +28,10 @@
     -fx-text-fill: -white;
 }
 
+#myServerInput {
+    -fx-alignment: center;
+
+}
 
 #mvContainerLeft {
     -fx-background-color: -grey1;
@@ -63,6 +68,11 @@
 .vbox {
     -fx-background-color: -grey0;
 }
+
+.background {
+    -fx-background-color: -grey0;
+}
+
 
 .text-field {
     -fx-background-color: -grey5;
@@ -130,13 +140,17 @@
 }
 
 #mvServerIPInput{
-    -fx-max-width: 100px;
+    -fx-max-width: 150px;
 }
 
 #mvToEN, #mvToDE {
-    -fx-pref-width: 75px;
+    -fx-pref-width: -buttonSmallWidth;
 }
 
 #cControls {
     -fx-alignment: bottom-center;
+}
+
+.scene {
+    -fx-background-color: -grey0;
 }

@@ -6,6 +6,7 @@ package chatroom_client;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
+import javafx.scene.control.Control;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -40,54 +41,84 @@ public class controller {
         sendingEventHandler();
         //connectToServer();
         //startThreadListener();
-        //startStates();
+        startStates();
 
 
 
 
     }
-    //Manage States when not connected in a thread
+
+    private void disable(Control... controls){
+        for(Control c: controls){
+            if(!c.isDisabled()){
+                c.setDisable(true);
+            }
+        }
+    }
+
+    private void enable(Control... controls){
+        for(Control c: controls){
+            if(c.isDisabled()){
+                c.setDisable(false);
+            }
+        }
+    }
+
+    //Manage States in a thread
     private void startStates() {
-        view.mvLogin.disableProperty().bind(Bindings.createBooleanBinding(() -> {
-            return (!model.connected);
-        }));
-
-
         r1 = () -> {
             while(true) {
+                try { //Only check each 100ms
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 //CheckConnection State
                 //If not Connected
                 if (model.connected) {
-                    //TODO States to active
-                    view.mvCreateLogin.setDisable(false);
-                    view.mvLogin.setDisable(false);
-                    view.mvJoinChatroom.setDisable(false);
-                    view.mvLeaveChatoom.setDisable(false);
-                    view.mvCreateChatroom.setDisable(false);
-                    view.mvDeleteChatroom.setDisable(false);
-                    view.mvChangePassword.setDisable(false);
-                    view.mvDeleteLogin.setDisable(false);
-                    view.mvLogout.setDisable(false);
-                    displayStatus(getBind("ConnectedStatus"), model.ipAddress);
+                    disable(view.mvServerConnect,
+                            view.mvServerIPInput,
+                            view.mvServerPortInput);
+                    enable(view.mvServerDisconnect,
+                            view.mvCreateLogin,
+                            view.mvLogin);
+                    if(model.loggedIn){ //Not Logged In
+                        disable(view.mvLogin);
+                        enable(view.mvJoinChatroom,
+                                view.mvLeaveChatoom,
+                                view.mvCreateChatroom,
+                                view.mvDeleteChatroom,
+                                view.mvChangePassword,
+                                view.mvDeleteLogin,
+                                view.mvLogout);
+                    }else{
+                        enable(view.mvLogin);
+                        disable(view.mvJoinChatroom,
+                                view.mvLeaveChatoom,
+                                view.mvCreateChatroom,
+                                view.mvDeleteChatroom,
+                                view.mvChangePassword,
+                                view.mvDeleteLogin,
+                                view.mvLogout);
+                    }
 
 
 
-                    while(model.connected){}
-
-                } else {
-                    //TODO States to disabled
-                    displayStatus(getBind("ConnectingFail"), model.ipAddress);
-                    view.mvCreateLogin.setDisable(true);
-                    view.mvJoinChatroom.setDisable(true);
-                    view.mvLogin.setDisable(true);
-                    view.mvLeaveChatoom.setDisable(true);
-                    view.mvCreateChatroom.setDisable(true);
-                    view.mvDeleteChatroom.setDisable(true);
-                    view.mvChangePassword.setDisable(true);
-                    view.mvDeleteLogin.setDisable(true);
-                    view.mvLogout.setDisable(true);
-
-                    while(!model.connected){}
+                } else{
+                    //Not Connected
+                    disable(view.mvServerDisconnect,
+                            view.mvCreateLogin,
+                            view.mvLogin,
+                            view.mvJoinChatroom,
+                            view.mvLeaveChatoom,
+                            view.mvCreateChatroom,
+                            view.mvDeleteChatroom,
+                            view.mvChangePassword,
+                            view.mvDeleteLogin,
+                            view.mvLogout);
+                    enable(view.mvServerConnect,
+                            view.mvServerIPInput,
+                            view.mvServerPortInput);
 
                 }
 
@@ -108,14 +139,16 @@ public class controller {
                 String msg;
                 try {
                     msg = socketIn.readLine();
+                    if (msg == null) {
+                        model.connected = false;
+                        break; // In case the server closes the socket
+                    }
+
                     processMsg(msg);
                 } catch (IOException e) {
                     break;
                 }
-                if (msg == null) {
-                    model.connected = false;
-                    break; // In case the server closes the socket
-                }
+
                 Platform.runLater(() -> {
                     displayInfo2(msg);
                     //view.cMessagesContainer.getChildren().add(new Label(msg));
@@ -206,7 +239,7 @@ public class controller {
     }
 
     private boolean getSuccess(){
-        while(model.isAnswerReady()){
+        while(model.isAnswerReady() && model.lastAnswer.split("\\|").length!=1){
             wait(10);
         } //wait for message to come in
         wait(100);
@@ -215,6 +248,12 @@ public class controller {
             resetLastAnswer();
             //System.out.println("ResetAnswer");
         }//reset lastAnswer when only checking for success  bool
+        else if(parts.length==1){
+            System.out.println(parts[0]);
+            //alertBox.display("Error, Please Try Again");
+            resetLastAnswer();
+            return false;
+        }
         displayInfo2(parts.toString());
         return Boolean.parseBoolean(parts[1]);
 
@@ -277,16 +316,33 @@ public class controller {
                 model.portNumber = port;
                 displayStatus(getBind("ConnectedStatus"), ip);
             }
-
-
-
-
             return true;
         }catch (IOException e){
             model.connected = false;
             return false;
         }finally {
 
+        }
+
+    }
+
+    private void logout(){
+        model.loggedIn=false;
+        model.currentUser="";
+        model.token="";
+        model.currentChatroom="";
+    }
+
+    private void disconnect(){
+        try {
+            socket.close();
+            stopThreadListener();
+            model.connected=false;
+            logout();
+            model.lastAnswer="";
+            displayStatus(getBind("Disconnected"), "");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -360,6 +416,10 @@ public class controller {
                 connectToServer(ip, Integer.parseInt(port));
             }
         });
+
+        view.mvServerDisconnect.setOnAction(e -> { //Server Disconnect
+            disconnect();
+        });
         view.mvCreateLogin.setOnAction(e -> { //Create Login
             String[] data = createLogin.display();
             sendMessage("CreateLogin", data[0], data[1]);
@@ -386,12 +446,10 @@ public class controller {
             updatePublicChatrooms();
             String[] data = chatroomJoin.display(model.publicChatrooms);
             String choice = data[0];
-            if (choice.equals(" ")) {model.joinedRooms.add(choice);}
-
 
             sendMessage("JoinChatroom", model.token, choice, model.currentUser);
             if(getSuccess()){
-
+                model.joinedRooms.add(choice);
             }else{
 
             }
@@ -451,7 +509,7 @@ public class controller {
             if(getSuccess()){
 
             }else{
-                alertBox.display(get("TokenInvalid"));
+                //alertBox.display(get("TokenInvalid"));
             }
 
 

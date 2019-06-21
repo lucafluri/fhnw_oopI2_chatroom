@@ -8,12 +8,16 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
+import javafx.scene.paint.Color;
 
 
 public class view {
@@ -51,6 +55,8 @@ public class view {
     VBox mvServerPort = new VBox();
     HBox mvServerInput = new HBox();
     JFXButton mvServerConnect = new JFXButton();
+    JFXButton mvServerDisconnect = new JFXButton();
+    HBox mvConnectionControls = new HBox();
     JFXButton mvCreateLogin = new JFXButton();
     JFXButton mvLogin = new JFXButton();
     JFXButton mvJoinChatroom = new JFXButton();
@@ -108,7 +114,7 @@ public class view {
         root.setCenter(center);
         root.setBottom(statusbar);
 
-        Scene scene = new Scene(root, 750, 500);
+        Scene scene = new Scene(root, 750, 500, Color.BLACK);
         scene.getStylesheets().add("chatroom_client/styles.css");
 
         setIDs();
@@ -148,6 +154,7 @@ public class view {
         mvServerPortInput.setText(Integer.toString(model.portNumber));
 
         mvServerConnect.textProperty().bind((getBind("connect")));
+        mvServerDisconnect.textProperty().bind((getBind("disconnect")));
         mvCreateLogin.textProperty().bind(getBind("CreateAccount"));
         mvLogin.textProperty().bind(getBind("Login"));
         mvJoinChatroom.textProperty().bind(getBind("JoinChatroom"));
@@ -162,9 +169,10 @@ public class view {
 
         mvServerIP.getChildren().addAll(mvServerIPLabel, mvServerIPInput);
         mvServerPort.getChildren().addAll(mvServerPortLabel, mvServerPortInput);
+        mvConnectionControls.getChildren().addAll(mvServerConnect, mvServerDisconnect);
         mvServerInput.getChildren().addAll(mvServerIP, mvServerPort);
         mvLangs.getChildren().addAll(mvToEN, mvToDE);
-        mvContainerLeft.getChildren().addAll(mvServerInput, mvServerConnect, mvCreateLogin, mvLogin, mvJoinChatroom, mvLeaveChatoom,  mvCreateChatroom, mvDeleteChatroom, mvChangePassword, mvDeleteLogin, mvLogout, mvLangs);
+        mvContainerLeft.getChildren().addAll(mvServerInput, mvConnectionControls, mvCreateLogin, mvLogin, mvJoinChatroom, mvLeaveChatoom,  mvCreateChatroom, mvDeleteChatroom, mvChangePassword, mvDeleteLogin, mvLogout, mvLangs);
         menuView.setContent(mvContainerLeft);
 
 
@@ -192,9 +200,9 @@ public class view {
 
 
         wbSpacer.setMinWidth(Region.USE_PREF_SIZE);
-        wbHamMenu.setPrefSize(20, 20);
+        //wbHamMenu.setPrefSize(20, 20);
         HBox.setHgrow(wbSpacer, Priority.ALWAYS);
-        windowBar.setPadding(new Insets(10));
+        //windowBar.setPadding(new Insets(10));
         windowBar.setAlignment(Pos.CENTER);
         windowBar.setSpacing(10);
 
@@ -250,6 +258,8 @@ public class view {
         mvServerPort.setId("mvServerPort");
         mvServerInput.setId("mvServerInput");
         mvServerConnect.setId("mvServerConnect");
+        mvServerDisconnect.setId("mvServerDisconnect");
+        mvConnectionControls.setId("mvConnectionControls");
         mvCreateLogin.setId("mvCreateLogin");
         mvLogin.setId("mvLogin");
         mvJoinChatroom.setId("mvJoinChatroom");

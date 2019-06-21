@@ -11,6 +11,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.scene.paint.Color;
+
+import java.awt.*;
 
 public class alertBox {
 
@@ -45,8 +48,8 @@ public class alertBox {
 
 
 
-
-        Scene scene = new Scene(layout, 200, 200);
+        layout.getStyleClass().add("background");
+        Scene scene = new Scene(layout, 200, 100, Color.BLACK);
         scene.getStylesheets().add("chatroom_client/styles.css");
         stage.setScene(scene);
         stage.showAndWait();

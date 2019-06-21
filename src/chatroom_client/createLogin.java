@@ -7,11 +7,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+
 
 public class createLogin {
     static String[] data = new String[2];
@@ -77,8 +81,9 @@ public class createLogin {
 
 
 
-
+        layout.getStyleClass().add("background");
         Scene scene = new Scene(layout, 200, 200);
+        scene.setFill(Color.BLACK);
         scene.getStylesheets().add("chatroom_client/styles.css");
         stage.setScene(scene);
         stage.showAndWait();
