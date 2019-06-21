@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="jars">
+    <archive path="D:/Projects/fhnw_oopI2_chatroom_final/src/jars/jfoenix-8.0.8.jar" />
+  </library>
+</eclipse-userlibraries>
+
